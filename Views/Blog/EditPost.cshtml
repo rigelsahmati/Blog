@@ -1,0 +1,399 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Blog.Areas.Identity.Data
+@inject UserManager<User> UserManager
+@model Blog.Models.Blog.EditPostModel
+@section Styles {
+    <link rel="stylesheet" href="@Url.Content("~/css/index.css")" />
+    <link rel="stylesheet" href="~/css/CreatePost.css" />
+    <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css"
+          rel="stylesheet" />
+    <!--Select Css-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/labelauty/1.1.4/jquery-labelauty.css" integrity="sha512-NUD74ySmYmRWEO5NXZ2EU0FfFhCIVhsxSoi3i4fybJYVhr5DkV+gdyEBd8tO0Pl/CspRwllRSAaUG7theVh1dA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="~/assets/plugins/FroalaEditor/css/froala_editor.css">
+    <link rel="stylesheet" href="~/assets/plugins/FroalaEditor/css/froala_style.css">
+    <link rel="stylesheet" href="~/assets/plugins/FroalaEditor/css/plugins/code_view.css">
+    <link rel="stylesheet" href="~/assets/plugins/FroalaEditor/css/plugins/colors.css">
+    <link rel="stylesheet" href="~/assets/plugins/FroalaEditor/css/plugins/emoticons.css">
+    <link rel="stylesheet" href="~/assets/plugins/FroalaEditor/css/plugins/line_breaker.css">
+    <link rel="stylesheet" href="~/assets/plugins/FroalaEditor/css/plugins/char_counter.css">
+    <link rel="stylesheet" href="~/assets/plugins/FroalaEditor/css/plugins/table.css">
+    <link rel="stylesheet" href="~/assets/plugins/FroalaEditor/css/plugins/video.css">
+    <link rel="stylesheet" href="~/assets/plugins/FroalaEditor/css/plugins/fullscreen.css">
+    <link rel="stylesheet" href="~/assets/plugins/FroalaEditor/css/plugins/file.css">
+    <link rel="stylesheet" href="~/assets/plugins/FroalaEditor/css/plugins/quick_insert.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.css">
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/filepond/4.30.4/filepond.css" integrity="sha512-OwkTbucz29JjQUeii4ZRkjY/E+Xdg4AfffPZICCf98rYKWIHxX87AwwuIQ73rbVrev8goqrKmaXyu+VxyDqr1A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css"
+          rel="stylesheet" />
+
+}
+@{
+    var user = await UserManager.GetUserAsync(User);
+    var Message = TempData["Message"];
+    var msgType = TempData["Type"] as System.String;
+    var ErrorMsg =TempData["ErrorMessage"];
+    var categories = ViewBag.Categories as IEnumerable<int>;
+
+}
+
+
+
+<div class="menu-control d-flex w-100">
+    <button class="side-menu-open-btn border-0 footer-btn p-2 rounded-2 menu-btn" title="Open Menu">
+        <i class="fa-solid fa-bars fs-6"></i>
+    </button>
+    <div class="main-title ms-5 w-100 align-items-center gap-3 d-flex justify-content-between position-relative">
+        <h3 class="m-0 pageTitle d-flex gap-3 align-items-center">
+        </h3>
+        @{
+            if (user.RoleId != 1)
+            {
+                <div class="searchParent rounded-3 p-0 position-absolute">
+                    <form method="post" asp-action="Search">
+                        <input id="searchUser" class="searchInput form-control w-100" type="text" placeholder="Search" name="q" />
+                        <div class="searchBody searchBody-hidden p-2">
+                        </div>
+                        <button type="submit" class="searchBtn searchBtn-hidden rounded-pill w-100 btn p-2 d-flex gap-2 align-items-center">
+                            <i class="searchIcon fa-solid fa-magnifying-glass p-2 rounded-circle"></i>
+                            Search for <b class="searchFor"></b>
+                        </button>
+                    </form>
+                </div>
+            }
+        }
+
+    </div>
+</div>
+
+
+<div class="main-body mt-3 w-100 d-flex gap-3">
+    <div class="main-content rounded-3 w-100 mt-4 d-flex flex-column align-items-center gap-3">
+
+        <div class="post-parent d-flex w-100 flex-column align-items-center gap-3">
+
+            <div class="post col-md-9 p-3 mt-3 rounded-3">
+                <form method="post" enctype="multipart/form-data" asp-controller="Blog" asp-action="EditPost" id="form">
+
+                    <div class="post-title mt-4 px-3 border-bottom pb-3">
+                        <label asp-for="@Model.Title" class="mb-2"></label>
+                        <input asp-for="@Model.Title" class=" form-control" required />
+                        <span asp-validation-for="@Model.Title" class="text-danger"></span>
+                    </div>
+                    <div class="post-info mt-3 px-3 d-flex gap-3 mb-3">
+                        <div class="d-flex gap-2 align-items-center">
+                            <i class="fa-solid fa-pen"></i>
+                            <p class="m-0">Writed by: <a>@user.UserName</a></p>
+                        </div>
+                        <p class="m-0">|</p>
+                        <div class="d-flex gap-2 align-items-center">
+                            <i class="fa-regular fa-calendar-days"></i>
+                            <p class="m-0">Published at: @DateTime.Now.ToString("yyyy/MM/dd, hh:mm")</p>
+                        </div>
+
+
+                    </div>
+
+                    <div class="post-image mt-3 ">
+                        <div class="w-100 rounded-4 imagePreview p-3 d-flex flex-column justify-content-center align-items-center">
+                            <p class="m-0 imagePreviewText imagePreviewText-hidden">Select an image for your post.</p>
+                            <div class="w-100 h-100 d-flex justify-content-center align-items-center rounded-4 position-relative rounded-3" style="background: #222222; overflow:hidden;">
+                                <div class="w-100 d-flex justify-content-end clearImageParent clearImageParent-active fade-in-top">
+                                    <div class="position-absolute imageInfo"><p class="m-0 imageName"></p><span class="imageSize"></span></div>
+                                    <button type="button" class="clearImageBtn border border-1 rounded-circle"><i class="fa-solid fa-xmark"></i></button>
+                                    <svg class="w-100 h-100" width="500" height="200" viewBox="0 0 500 200" preserveAspectRatio="none" style="mix-blend-mode: normal;color: rgba(54, 151, 99, 1);">
+                                    <defs>
+                                        <radialGradient id="gradient-2" cx=".5" cy="1.25" r="1.15">
+                                            <stop offset="50%" stop-color="#000000"></stop>
+                                            <stop offset="56%" stop-color="#0a0a0a"></stop>
+                                            <stop offset="63%" stop-color="#262626"></stop>
+                                            <stop offset="69%" stop-color="#4f4f4f"></stop>
+                                            <stop offset="75%" stop-color="#808080"></stop>
+                                            <stop offset="81%" stop-color="#b1b1b1"></stop>
+                                            <stop offset="88%" stop-color="#dadada"></stop>
+                                            <stop offset="94%" stop-color="#f6f6f6"></stop>
+                                            <stop offset="100%" stop-color="#ffffff"></stop>
+                                        </radialGradient>
+                                        <mask id="mask-2">
+                                            <rect x="0" y="0" width="500" height="200" fill="url(#gradient-2)"></rect>
+                                        </mask>
+                                    </defs>
+                                    <rect x="0" width="500" height="200" fill="currentColor" mask="url(#mask-2)"></rect>
+                                 </svg>
+                                </div>
+                                <img id="output" class="w-100 fade-in-top" src="/uploads/img/postImg/@Model.ImageUrl" style="opacity: 1; display: block;">
+                            </div>
+                        </div>
+                        <input type="file" max="3MB" name="image" class="imageInput" accept="image/png,image/jpg,image/jpeg,image/web" hidden/>
+
+                    </div>
+
+                    <div class="post-context m mt-5 w-100 px-3">
+                        <textarea id='editor' style="margin-top: 30px;" asp-for="@Model.Context">
+                        </textarea>
+                        <span asp-validation-for="@Model.Context" class="text-danger"></span>
+
+                    </div>
+
+                    <div class="d-flex gap-2 flex-column mt-3 border p-2 rounded-3 border-1">
+                        <h5>Select categories: </h5>
+                        <div class="d-flex gap-2 flex-wrap">
+                            @{
+                                foreach(var c in Model.Categories)
+                                {
+                                    if(categories != null){
+                                        var isChecked= (categories.Any(x => x == c.Id)) ? "categorieBtn-selected" : "";
+                                        var check = (isChecked != "") ? "checked" : "";
+                                        <label for="categorie-@c.Id" class="btn categorieBtn @isChecked"><i class="fa-solid @c.Icon me-2"></i> @c.Name</label>
+                                        <input type="checkbox" name="categorieIds" value="@c.Id" id="categorie-@c.Id" hidden @check/>
+                                        continue;
+                                    }
+                                  
+                                    <label for="categorie-@c.Id" class="btn categorieBtn"><i class="fa-solid @c.Icon me-2"></i> @c.Name</label>
+                                    <input type="checkbox" name="categorieIds" value="@c.Id" id="categorie-@c.Id" hidden/>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <span class="text-danger">@ErrorMsg</span>
+                    <div class="d-flex gap-3 w-100 mt-4 px-3 justify-content-end">
+                        <button class="btn w-25 draftBtn">
+                            <i class="fa-solid fa-download ms-2"></i>
+                            Save as Draft
+                        </button>
+                        <button class="btn w-25 postBtn">
+                            <i class="fa-solid fa-upload ms-2"></i>
+                            Post
+                        </button>
+                    </div>
+                    <input asp-for="@Model.UserId" hidden/> 
+                    <input type="hidden" asp-for="@Model.PostId" hidden/> 
+                </form>
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+@section Scripts{
+   <!-- Select Script-->
+  
+   <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/assets/plugins/toast-master/js/jquery.toast.js"></script>
+    <script src="~/js/search.js"></script>
+
+    <script type="text/javascript" src="~/assets/plugins/FroalaEditor/js/froala_editor.min.js"></script>
+    <script type="text/javascript" src="~/assets/plugins/FroalaEditor/js/plugins/align.min.js"></script>
+    <script type="text/javascript" src="~/assets/plugins/FroalaEditor/js/plugins/char_counter.min.js"></script>
+    <script type="text/javascript" src="~/assets/plugins/FroalaEditor/js/plugins/code_beautifier.min.js"></script>
+    <script type="text/javascript" src="~/assets/plugins/FroalaEditor/js/plugins/code_view.min.js"></script>
+    <script type="text/javascript" src="~/assets/plugins/FroalaEditor/js/plugins/colors.min.js"></script>
+    <script type="text/javascript" src="~/assets/plugins/FroalaEditor/js/plugins/draggable.min.js"></script>
+    <script type="text/javascript" src="~/assets/plugins/FroalaEditor/js/plugins/emoticons.min.js"></script>
+    <script type="text/javascript" src="~/assets/plugins/FroalaEditor/js/plugins/entities.min.js"></script>
+    <script type="text/javascript" src="~/assets/plugins/FroalaEditor/js/plugins/file.min.js"></script>
+    <script type="text/javascript" src="~/assets/plugins/FroalaEditor/js/plugins/font_size.min.js"></script>
+    <script type="text/javascript" src="~/assets/plugins/FroalaEditor/js/plugins/font_family.min.js"></script>
+    <script type="text/javascript" src="~/assets/plugins/FroalaEditor/js/plugins/fullscreen.min.js"></script>
+    <script type="text/javascript" src="~/assets/plugins/FroalaEditor/js/plugins/line_breaker.min.js"></script>
+    <script type="text/javascript" src="~/assets/plugins/FroalaEditor/js/plugins/inline_style.min.js"></script>
+    <script type="text/javascript" src="~/assets/plugins/FroalaEditor/js/plugins/link.min.js"></script>
+    <script type="text/javascript" src="~/assets/plugins/FroalaEditor/js/plugins/lists.min.js"></script>
+    <script type="text/javascript" src="~/assets/plugins/FroalaEditor/js/plugins/paragraph_format.min.js"></script>
+    <script type="text/javascript" src="~/assets/plugins/FroalaEditor/js/plugins/paragraph_style.min.js"></script>
+    <script type="text/javascript" src="~/assets/plugins/FroalaEditor/js/plugins/quick_insert.min.js"></script>
+    <script type="text/javascript" src="~/assets/plugins/FroalaEditor/js/plugins/quote.min.js"></script>
+    <script type="text/javascript" src="~/assets/plugins/FroalaEditor/js/plugins/table.min.js"></script>
+    <script type="text/javascript" src="~/assets/plugins/FroalaEditor/js/plugins/save.min.js"></script>
+    <script type="text/javascript" src="~/assets/plugins/FroalaEditor/js/plugins/url.min.js"></script>
+    <script type="text/javascript" src="~/assets/plugins/FroalaEditor/js/plugins/video.min.js"></script>
+
+    <script>
+
+        window.onload = (event) => {
+            (function () {
+                FroalaEditor.DefineIcon('alert', { NAME: 'info', SVG_KEY: 'help' })
+                FroalaEditor.RegisterCommand('alert', {
+                    title: 'Hello',
+                    focus: false,
+                    undo: false,
+                    refreshAfterCallback: false,
+                    callback: function () {
+                        alert('Hello!')
+                    }
+                })
+
+                FroalaEditor.DefineIcon('clear', { NAME: 'remove', SVG_KEY: 'remove' })
+                FroalaEditor.RegisterCommand('clear', {
+                    title: 'Clear HTML',
+                    focus: false,
+                    undo: true,
+                    refreshAfterCallback: true,
+                    callback: function () {
+                        this.html.set('')
+                        this.events.focus()
+                    }
+                })
+
+                FroalaEditor.DefineIcon('insert', { NAME: 'plus', SVG_KEY: 'add' })
+                FroalaEditor.RegisterCommand('insert', {
+                    title: 'Insert HTML',
+                    focus: true,
+                    undo: true,
+                    refreshAfterCallback: true,
+                    callback: function () {
+                        this.html.insert('My New HTML')
+                    }
+                })
+
+                new FroalaEditor("#editor", {
+
+                            toolbarButtons: {
+                        'moreText': {
+                            'buttons': ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'fontFamily', 'fontSize', 'textColor', 'backgroundColor', 'inlineClass', 'inlineStyle', 'clearFormatting']
+                        },
+                        'moreParagraph': {
+                            'buttons': ['alignLeft', 'alignCenter', 'alignRight', 'formatOLSimple', 'alignRight', 'alignJustify', 'formatOL', 'formatUL', 'paragraphFormat', 'paragraphStyle', 'lineHeight', 'outdent', 'indent', 'quote']
+                        },
+                        'moreRich': {
+                            'buttons': ['insertLink', 'insertVideo', 'fontAwesome', 'embedly', 'insertHR']
+                        },
+                        'moreMisc': {
+                            'buttons': ['undo', 'redo', 'fullscreen', 'print', 'getPDF', 'spellChecker', 'selectAll', 'html', 'help']
+                        }
+                    },
+
+
+
+                })
+            })()
+        }
+
+    </script>
+
+    <script>
+        const imagePreview = document.querySelector('.imagePreview');
+        const input = document.querySelector('.imageInput');
+        var previewActive = true;
+        const previewImage = (event) => {
+            const imageFiles = event.target.files;
+            const imageFilesLength = imageFiles.length;
+            const imageSrc = URL.createObjectURL(imageFiles[0]);
+            const imagePreviewElement = document.querySelector("#output");
+            document.querySelector('svg').style.color = "rgba(54, 151, 99, 1)";
+            imagePreviewElement.src = imageSrc;
+            imagePreviewElement.style.opacity =  1;
+            imagePreviewElement.style.display = "block";
+            imagePreviewElement.classList.toggle('fade-in-top');
+            document.querySelector('.imageName').innerHTML = imageFiles[0].name;
+            let imgSize = Math.round(imageFiles[0].size);
+            if (imgSize > 125000) document.querySelector('.imageSize  ').innerHTML = (Math.round(imgSize / 1125000)) + "MB";
+            if (imgSize < 125000) document.querySelector('.imageSize  ').innerHTML = (Math.round(imgSize / 1024)) + "KB";
+            if (imageFiles[0].size > 5242880) {
+                document.querySelector('svg').style.color = "rgb(201 63 63)";
+                document.querySelector('.imageName').innerHTML = "Image size must be lower then 5MB";
+            }
+        };
+        document.querySelectorAll('.categorieBtn').forEach((button) => {
+            button.addEventListener('click', function () {
+            if (button.classList.contains('categorieBtn-selected')) {
+                button.classList.remove('categorieBtn-selected');
+            }else{
+                button.classList.add('categorieBtn-selected');
+            };
+            });
+        });
+        imagePreview.addEventListener('click', function () {
+            if(!previewActive) input.click();
+        });
+        input.addEventListener('input', function () {
+            previewImage(event);
+            previewActive = true;
+            previewImageStyle("show")
+        });
+        document.querySelector('.clearImageBtn').addEventListener('click', function(){
+            previewImageStyle('hide');
+            previewActive = false;
+        })
+        function previewImageStyle(option){
+            if(option == "show"){
+                document.querySelector("#output").classList.remove('fade-out-top');
+                document.querySelector('.clearImageParent').classList.remove('fade-out-top')
+                document.querySelector('.imagePreviewText').classList.add('imagePreviewText-hidden');
+                document.querySelector('.clearImageParent').classList.add('clearImageParent-active');
+                document.querySelector('.clearImageParent').classList.add('fade-in-top');
+            }
+            if(option == "hide"){
+                 document.querySelector('.clearImageParent').classList.remove('fade-in-top');
+                 document.querySelector("#output").classList.remove('fade-in-top');
+                 document.querySelector("#output").classList.add('fade-out-top');
+                 document.querySelector('.clearImageParent').classList.add('fade-out-top');
+                 document.querySelector('.imagePreviewText').classList.remove('imagePreviewText-hidden');
+                 document.querySelector('.clearImageParent').classList.remove('clearImageParent-active');
+                 document.querySelector('.imageName').innerHTML = "";
+                 document.querySelector('.imageSize  ').innerHTML = "";
+                 input.value = '';
+                 document.querySelector("#output").src = '';
+            }
+        }
+    </script>
+    @if (Message != null)
+    {
+
+        if (msgType == "Sucess")
+        {
+            <script>
+                new Notify({
+                    status: 'success',
+                    title: '@msgType',
+                    text: '@Message',
+                    effect: 'fade',
+                    speed: 300,
+                    customClass: '',
+                    customIcon: '',
+                    showIcon: true,
+                    showCloseButton: true,
+                    autoclose: true,
+                    autotimeout: 3000,
+                    gap: 20,
+                    distance: 20,
+                    type: 1,
+                    position: 'right top'
+                })
+            </script>
+            return;
+        }
+        if (msgType == "Error")
+        {
+            <script>
+                new Notify({
+                    status: 'error',
+                    title: '@msgType',
+                    text: '@Message',
+                    effect: 'fade',
+                    speed: 300,
+                    customClass: '',
+                    customIcon: '',
+                    showIcon: true,
+                    showCloseButton: true,
+                    autoclose: true,
+                    autotimeout: 3000,
+                    gap: 20,
+                    distance: 20,
+                    type: 1,
+                    position: 'right top'
+                })
+            </script>
+            return;
+        }
+
+    }
+}

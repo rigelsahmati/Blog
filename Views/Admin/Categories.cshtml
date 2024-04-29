@@ -1,0 +1,116 @@
+﻿@model Blog.Models.Admin.ViewCategoriesModel
+@{
+}
+
+@section Styles {
+   <link rel="stylesheet" href="@Url.Content("~/css/categorie.css")" />
+}
+@{
+    var Message = TempData["Message"];
+    var Type = TempData["Type"];
+    var Colors = new List<string> { 
+    "rgb(102, 217, 232);",
+    "rgb(255, 212, 59);",
+    "#ea868f",
+    "rgb(255, 107, 107);",
+    "#4DD0E1;",
+    "#E1BEE7",
+    "#795548",
+    "#A5D6A7",
+    "#ff8844",
+    "#a2ff79",
+    };
+}
+
+
+<div class="menu-control d-flex w-100">
+    <button class="side-menu-open-btn border-0 footer-btn p-2 rounded-2 menu-btn" title="Open Menu">
+        <i class="fa-solid fa-bars fs-6"></i>
+    </button>
+    <div class="main-title ms-5 w-100 align-items-center gap-3 d-flex ">
+        <h3 class="m-0 pageTitle">@Model.PageTitle</h3>
+        <p class="rounded-1 m-0 bg-white py-1 px-2  border border-1" style="border-color: var(--black) !important;">@Model.Categories.Count()</p>
+    </div>
+</div>
+
+<div class="main-body w-100 d-flex gap-3">
+    <div class="main-content border border-1 rounded-3 w-100 mt-4 ">
+
+
+        <div class="w-100 p-2 d-flex flex-wrap align-content-start">
+            <div class="w-100 d-flex flex-wrap">
+
+                @{
+                    foreach(var c in Model.Categories.OrderByDescending(x => x.PostCategories.Count))
+                    {
+                        Random random = new Random();
+                        int randomIndex = random.Next(0, Colors.Count);
+
+                        <div class="categorie d-flex flex-column justify-content-between m-3 rounded-2 border border-1" style="border-color:var(--black) !important;">
+                                <div class="categorieColor w-100" style=" background:@Colors[randomIndex]"></div>
+                                <div class="p-3">
+                                <div class="d-flex gap-2 align-items-center">
+                                    <i class="fa-solid @c.Icon"></i>
+                                    <h4 class="m-0">@c.Name</h4>
+                                </div>
+                                    <p>@c.PostCategories.Count posts published.</p>
+                                </div>
+                                <div class="w-100 d-flex justify-content-end p-2">
+                                <a asp-action="Posts" asp-route-categorieId="@c.Id" class="categoriePostsBtn rounded-2 border border-1 p-2" style="border-color:var(--black) !important;">
+                                        View Posts
+                                    </a>
+                                </div>
+                        </div>
+
+                        Colors.Remove(Colors[randomIndex]);
+                    }
+                    }
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/assets/plugins/toast-master/js/jquery.toast.js"></script>
+
+    <script>
+        window.onload = (event) => {
+            document.querySelector('#categories').classList.add('menu-iteme-active');
+            document.querySelector('#categories').children[0].children[0].style.color = "#f16363";
+        }       
+    </script>
+    @if (Message != null)
+    {
+        if (Type == "Error")
+        {
+            <script>
+                $.toast({
+                    heading: 'Attention!',
+                    text: '@Message',
+                    position: 'top-right',
+                    loaderBg: '#e38383',
+                    icon: 'error',
+                    hideAfter: 3500,
+                    stack: 6
+                });
+            </script>
+        }
+        else if (Type == "Sucess")
+        {
+            <script>
+                $.toast({
+                    heading: 'Success!',
+                    text: '@Message',
+                    position: 'top-right',
+                    loaderBg: '#ff6849',
+                    icon: 'success',
+                    hideAfter: 3500,
+                    stack: 6
+                });
+            </script>
+        }
+
+    }
+}

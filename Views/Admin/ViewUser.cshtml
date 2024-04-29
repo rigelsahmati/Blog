@@ -1,0 +1,407 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Blog.Areas.Identity.Data
+@using System.Globalization;
+@model Blog.Models.Admin.ViewUserModel
+@inject UserManager<User> UserManager
+@section Styles {
+    <link rel="stylesheet" href="@Url.Content("~/css/viewUser.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/plugins/select2/dist/css/select2.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/post.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/editImages.css")" />
+}
+@{
+    var Message = TempData["Message"];
+    var msgType = TempData["Type"] as System.String;
+    var user = await UserManager.GetUserAsync(User);
+    bool owner = user.Id == Model.User.Id ? true : false;
+}
+<div class="menu-control d-flex w-100">
+    <button class="side-menu-open-btn border-0 footer-btn p-2 rounded-2 menu-btn" title="Open Menu">
+        <i class="fa-solid fa-bars fs-6"></i>
+    </button>
+    <div class="main-title ms-5 w-100 align-items-center gap-3 d-flex ">
+        <h1 class="m-0 pageTitle"></h1>
+    </div>
+</div>
+
+<div class="main-body w-100 d-flex gap-3">
+    <div class="main-content d-flex justify-content-center rounded-3 w-100 mt-4 ">
+
+        <div class="profileContent">
+            <div class="w-100 position-relative images">
+                <a href="~/uploads/img/profileCover/@Model.User.CoverImage" data-lightbox="User Cover Image" class="coverImage w-100 h-100">
+                    <img src="~/uploads/img/profileCover/@Model.User.CoverImage" class="coverImage w-100 h-100 rounded-3" />
+                </a>
+                <a href="~/uploads/img/usersImg/@Model.User.ProfileImage" data-lightbox="User Profle Image" class="coverImage w-100 h-100">
+                    <img class="userImage" src="~/uploads/img/usersImg/@Model.User.ProfileImage" />
+                </a>
+                @if (owner)
+                {
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn editCoverImg" data-bs-toggle="modal" data-bs-target="#imagesModal">
+                        <i class="fa-solid fa-image me-2"></i>
+                        Change Images
+                    </button>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="imagesModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title d-flex align-items-center fs-5" id="exampleModalLabel">
+                                        <i class="fa-solid fa-image me-2    " style="font-size: 80%;"></i>
+                                        Change Images
+                                    </h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form method="post" enctype="multipart/form-data" asp-controller="Blog" asp-action="EditImages">
+                                    <input type="file" class="profileInput" name="profileInput" accept="image/png,image/jpg,image/jpeg,image/web" hidden>
+                                    <input type="file" class="coverInput" name="coverInput" accept="image/png,image/jpg,image/jpeg,image/web" hidden>
+                                    <div class="modal-body d-flex flex-column align-items-center">
+                                        <div class="btn-group w-100 gap-2">
+                                            <button type="button" class="btn editImageType profileEditBtn">Edit Profile Image</button>
+                                            <button type="button" class="btn editImageType coverEditBtn">Edit Cover Image</button>
+                                        </div>
+                                        <div class="imagePreviewParent d-flex rounded-3 mt-2 align-items-center justify-content-center">
+                                            <img src="" class="imagePreview" />
+                                        </div>
+                                        <p class="imageName mb-0 mt-2 w-100"></p>
+                                        <span class="imageSize w-100"></span>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary saveImages" disabled>Save changes</button>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="mt-4">
+                <div class="d-flex justify-content-between px-2">
+                    <h3>@Model.User.FullName</h3>
+                    <div class="">
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#editModal" class="btn btn-primary border-0" style="background:#58afed">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            Edit
+                        </button>
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#bannModal" class="btn btn-primary border-0" style="background:#ed5858 !important;">
+                            <i class="fa-regular fa-circle-xmark"></i>
+                            Ban
+                        </button>
+                        <button type="button" id="deleeteBtnConfirm" class="btn btn-danger border-0" style="background:#ed5858 !important;">
+                            <i class="fa-solid fa-trash-can"></i>
+                            Delete
+                        </button>
+
+                        <!-- Bann Modal -->
+                        <div class="modal fade" id="bannModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content" style="background: white !important;">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Ban User</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form id="banForm" method="post" asp-action="BannUser">
+                                        <div class="modal-body">
+                                            @if(Model.User.LockoutEnabled){
+                                                var date ="";
+                                                if (DateTimeOffset.TryParseExact(Model.User.LockoutEnd.ToString(), "M/d/yyyy h:mm:ss tt zzz", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTimeOffset dateTimeOffset))
+                                                {
+                                                    int year = dateTimeOffset.Year;
+                                                    int month = dateTimeOffset.Month;
+                                                    int day = dateTimeOffset.Day;
+                                                    int hour = dateTimeOffset.Hour;
+                                                    int minute = dateTimeOffset.Minute;
+                                                    date = ($"{year}/{month}/{day} | {hour}:{minute}");
+                                                }
+                                                <p class="text-danger">User is currently banned until @date </p>
+                                            }
+                                            <label for="roleSelect" class="mb-2">Select The Ban Duration </label>
+                                            <select name="bannTimeId" class="form-select" id="roleSelect">
+                                               <option value="1">1 Day</option>
+                                               <option value="2">3 Day</option>
+                                               <option value="3">1 Week</option>
+                                               <option value="4">1 Month</option>
+                                               <option value="5">3 Months</option>
+                                               <option value="6">Until I Change</option>
+                                            </select>
+                                            @if (Model.User.LockoutEnabled)
+                                            {
+                                                <button type="button" id="removeBan" class="btn btn-warning mt-3 w-100" >Remove Ban</button>
+                                            }
+                                        </div>
+                                        <input type="hidden" name="userId" value="@Model.User.Id" hidden/>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-danger">Save changes</button>
+                                        </div>
+                                        <input type="hidden" name="userId" value="@Model.User.Id" />
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Edit Modal -->
+                        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content" style="background: white !important;">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Edit User</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form method="post" asp-action="EditUser">
+                                        <div class="modal-body">
+                                            <label for="roleSelect" class="mb-2">Change User Role</label>
+                                            <select asp-for="@Model.RoleId" class="form-select" id="roleSelect">
+                                                @foreach (var r in Model.Roles)
+                                                {
+                                                    <option value="@r.id">@r.Name</option>
+
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary">Save changes</button>
+                                        </div>
+                                        <input type="hidden" asp-for="@Model.AdminId" />
+                                        <input type="hidden" name="userId" value="@Model.User.Id" />
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <form method="post" asp-action="DeleteUser" class="d-none">
+                            <input type="hidden" asp-for="@Model.AdminId" />
+                            <input type="hidden" name="userId" id="userId" value="@Model.User.Id" />
+                            <button type="submit" id="deleteBtn" hidden></button>
+                        </form>
+                    </div>
+                </div>
+                <div class="d-flex gap-3 mt-4">
+                    <div class="profileInfo p-3 py-4 rounded-3 d-flex flex-column gap-2">
+                        <div class="profileInfo-Content d-flex align-items-center gap-2"><i class="fa-solid fa-earth-americas"></i> <p class="m-0">Account Status: @(@Model.User.LockoutEnabled ? "Banned" : "Active")</p></div>
+                        <div class="profileInfo-Content d-flex align-items-center gap-2"><i class="fa-solid fa-toolbox"></i> <p class="m-0">Role: @Model.User.Role.Name</p></div>
+                        <div class="profileInfo-Content d-flex align-items-center gap-2"><i class="fa-solid fa-user-tag"></i> <p class="m-0">Username: @Model.User.UserName</p></div>
+                        <div class="profileInfo-Content d-flex align-items-center gap-2"><i class="fa-solid fa-user"></i> <p class="m-0">Full Name: @Model.User.FullName</p></div>
+                        <div class="profileInfo-Content d-flex align-items-center gap-2"><i class="fa-solid fa-calendar-days"></i> <p class="m-0">Joined at: @Model.User.CreatedTime.ToString("yyyy/MM/dd")</p></div>
+                        <div class="profileInfo-Content d-flex align-items-center gap-2"><i class="fa-solid fa-envelope"></i> <p class="m-0">Email: @Model.User.Email</p></div>
+                        <div class="profileInfo-Content d-flex align-items-center gap-2"> <i class="fa-solid fa-envelopes-bulk"></i> <p class="m-0">Posts: @Model.User.Posts.Count()</p></div>
+                    </div>
+                    <div class="profile d-flex flex-column gap-3">
+                        <div class="filterParent w-100 d-flex gap-2">
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#filterModal" class="btn border border-2 w-100 filterBtn">
+                                <i class="fa-solid fa-sliders me-1"></i>
+                                Filter
+                            </button>
+                            <button id="clearFilters" class="btn border border-2 w-50 clearFilters-hidden">
+                                <i class="fa-solid fa-circle-minus"></i>
+                                Clear Filters
+                            </button>
+
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content" style="background: white !important;">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Filter Posts</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label for="roleSelect" class="mb-2">Filter By Categorie:</label>
+                                                <select id="filterCategorie" class="form-select" id="roleSelect">
+                                                    <option value="0" selected>Select Categorie</option>
+                                                    @foreach (var c in Model.Categories)
+                                                    {
+                                                        <option value="@c.Id">@c.Name</option>
+
+                                                    }
+                                                </select>
+                                            </div>
+                                            <div class="mt-3 d-flex gap-2 flex-column">
+                                                <label class="mb-2">Filter By Time:</label>
+                                                <div class="d-flex gap-2">
+                                                    <div class=" w-50">
+                                                        <input id="filterTimeFrom" type="text" class="filterTime form-control" placeholder="From: "/>
+                                                    </div>
+                                                    <div class=" w-50">
+                                                        <input id="filterTimeTo" type="text" class="filterTime form-control" placeholder="To: "/>
+                                                    </div>
+                                                   
+                                                </div>
+                                                
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button id="filterSubmit" type="submit" class="btn btn-primary" data-bs-dismiss="modal">
+                                                <i class="fa-solid fa-filter"></i>
+                                                Filter
+                                            </button>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="userPosts-parent" class="post-parent d-flex flex-column gap-3 parent-active">
+
+                            @{
+                                foreach (var p in Model.User.Posts.OrderByDescending(x => x.CreatedTime))
+                                {
+                                    var isLiked = Model.ViewerLikedPosts.Contains(p) ? "like-btn-active" : " ";
+                                    <div class="post position-relative p-3 rounded-3 mt-2">
+                                        <div class="post-header d-flex">
+
+                                            <a asp-action="Profile" asp-route-id="@p.UserId">
+                                                <img src="~/uploads/img/usersImg/@p.User.ProfileImage" width="40px" height="40px" class="postUserImg" />
+                                            </a>
+                                            <div class="ms-3 w-100 d-flex align-items-center justify-content-between">
+                                                <div>
+                                                    <a asp-action="Profile" asp-route-id="@p.UserId">
+                                                        <p class="m-0 postUsername">@p.User.FullName</p>
+                                                    </a>
+                                                    <p class="m-0 postDate">@p.CreatedTime.ToString("HH:mm dd/MM/yyyy")</p>
+                                                </div>
+                                               
+                                            </div>
+
+                                        </div>
+                                        <div class="postBody w-100 mt-2">
+                                            <div class="w-100 d-flex justify-content-center rounded-3" style="background:#222222;">
+                                                <img src="~/uploads/img/postImg/@p.ImageUrl" class="postImg " />
+                                            </div>
+                                            <div class="postTitle mt-2 p-2">
+                                                <a asp-controller="Blog" asp-action="Post" asp-route-id="@p.id" id="postUrlId-@p.id" class="w-100 m-0 fs-5">
+                                                    @p.Title
+                                                </a>
+                                            </div>
+                                            <div class="likeCount mt-2 p-2 border-top d-flex justify-content-between">
+                                                <p class="m-0">
+                                                    <i class="fa-solid fa-thumbs-up"></i>
+                                                    <b id="likeCount-@p.id" class="m-0">@p.Likes.Count</b>
+                                                </p>
+                                                <p class="m-0">
+                                                    <i class="fa-solid fa-comment"></i>
+                                                    @p.Coments.Count()
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="postFooter w-100 btn-group mt-2 p-2 border-top rounded-0">
+                                           
+                                                <button id="likeBtn-@p.id" data-userId="@UserManager.GetUserId(User)" data-postId="@p.id" class="isLiked like-btn col btn ">
+                                                    <i class="fa-solid fa-thumbs-up"></i>
+                                                    Like
+                                                </button>
+
+                                            <a href="/Blog/Post/@p.id#coment" class="col btn">
+                                                <i class="fa-solid fa-comment"></i>
+                                                Comment
+                                            </a>
+                                            <button data-urlId="@p.id" class="copyLinkBtn col btn shareBtn">
+                                                <i class="fa-solid fa-share"></i>
+                                                Share
+                                            </button>
+                                        </div>
+                                    </div>
+                                }
+                            }
+
+                        </div>
+
+                        
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+</div>
+
+@section Scripts{
+    <script src="~/js/viewUser.js"></script>
+    <script src="~/js/post.js"></script>
+    <script src="~/assets/plugins/toast-master/js/jquery.toast.js"></script>
+    <script src="~/assets/plugins/select2/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/js/like.js"></script>
+    <script>
+        $('#removeBan').on('click', function(){
+            $('#roleSelect').val(0);
+            $('#banForm').submit();
+        })
+    </script>
+    @if (owner)
+    {
+        <script src="~/js/editImages.js"></script>
+        <script>
+            window.onload = (event) => {
+                document.querySelector('#myAcc').classList.add('menu-iteme-active')
+                document.querySelector('#myAcc').children[0].children[0].style.color = "#f16363";
+            }
+        </script>
+    }
+    @if (Message != null)
+    {
+
+        if (msgType == "Sucess")
+        {
+            <script>
+                new Notify({
+                    status: 'success',
+                    title: '@msgType',
+                    text: '@Message',
+                    effect: 'fade',
+                    speed: 300,
+                    customClass: '',
+                    customIcon: '',
+                    showIcon: true,
+                    showCloseButton: true,
+                    autoclose: true,
+                    autotimeout: 3000,
+                    gap: 20,
+                    distance: 20,
+                    type: 1,
+                    position: 'right top'
+                })
+            </script>
+            return;
+        }
+        if (msgType == "Error")
+        {
+            <script>
+                new Notify({
+                    status: 'error',
+                    title: '@msgType',
+                    text: '@Message',
+                    effect: 'fade',
+                    speed: 300,
+                    customClass: '',
+                    customIcon: '',
+                    showIcon: true,
+                    showCloseButton: true,
+                    autoclose: true,
+                    autotimeout: 3000,
+                    gap: 20,
+                    distance: 20,
+                    type: 1,
+                    position: 'right top'
+                })
+            </script>
+            return;
+        }
+
+    }
+}   

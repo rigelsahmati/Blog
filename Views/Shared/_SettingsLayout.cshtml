@@ -1,0 +1,35 @@
+﻿@section Styles {
+    <link rel="stylesheet" href="@Url.Content("~/css/usersDashboard.css")" />
+}
+@{
+    Layout = "_Layout.cshtml";
+}
+
+
+
+<div class="menu-control d-flex w-100">
+    <button class="side-menu-open-btn border-0 footer-btn p-2 rounded-2 menu-btn" title="Open Menu">
+        <i class="fa-solid fa-bars fs-6"></i>
+    </button>
+    <div class="main-title ms-5 w-100 align-items-center gap-3 d-flex ">
+        <h1 class="m-0 pageTitle">Settings</h1>
+    </div>
+</div>
+
+<div class="main-body w-100 d-flex gap-3">
+    <div class="main-content border border-1 rounded-3 w-100 mt-4 ">
+
+
+        <div class="w-100 h-100 d-flex flex-wrap align-content-start">
+
+           @RenderBody()
+
+        </div>
+
+    </div>
+
+
+</div>
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}

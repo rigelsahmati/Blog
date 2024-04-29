@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "Not Found";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Not Found</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
+        }
+
+        .error-container {
+            text-align: center;
+        }
+
+        .error-icon {
+            font-size: 80px;
+        }
+
+        .error-message {
+            font-size: 24px;
+            margin-top: 20px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-icon">
+            <img width="100" height="100" src="~/images/notFound.png" alt="page-not-found--v2" />
+        </div>
+        <div class="error-message">
+            <p>Oops! The page you are looking for could not be found.</p>
+            <p>Please check the URL or navigate back to the homepage.</p>
+        </div>
+    </div>
+</body>
+</html>

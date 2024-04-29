@@ -1,0 +1,98 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --black: rgb(68, 68, 68);
+    --yellow: rgb(255 212 59);
+    --grey: rgb(244, 244, 244);
+    --dark-grey: rgb(235, 235, 235);
+    --white: rgb(255, 255, 255);
+}
+
+
+.whatsOnYourMind-Btn {
+    outline: none;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    border-color: black !important;
+    background: #fffff5 !important;
+}
+
+.newPost-Btn {
+    border-color: var(--black) !important;
+    background: rgb(97 97 97) !important;
+    color: white !important;
+}
+
+.newPostCard {
+    background: white;
+    border:1px solid black !important;
+    width: 70%;
+}
+
+
+.post {
+    width: 70%;
+}
+
+/*  Search Bar  */
+.searchParent {
+    width: 40%;
+    top: 0%;
+    right: 0;
+    z-index: 40;
+    background: white;
+}
+.searchResult {
+    transition: all .2s;
+    border: 1px solid rgb(126 55 142 / 10%);
+    box-shadow: 1px 4px 6px #b9b9ecc4;
+    background: #3779d812;
+}
+.searchResult > img {
+    object-fit: cover;  
+}
+.searchResult:hover, .searchBtn:hover {
+    background: #f9f5f5;
+}
+.searchBtn {
+    transition: all .3s;
+    border-color: var(--black) !important;
+}
+.searchIcon {
+    background: rgb(55 121 216);
+    color: white;
+    font-size: 90%;
+}
+.searchBtn-hidden {
+    overflow: hidden;
+    height: 0;
+    padding: 0 !important;
+    border: none;
+    opacity: 0;
+}
+.searchBody-hidden{
+    opacity:0;
+    display:none;
+}
+
+.loadMoreBtn {
+    border-color: var(--black) !important;
+}
+.loadMoreBtn:hover {
+    color: rgb(241, 99, 99);
+    background: rgb(109 149 255 / 28%);
+}
+@media screen and (max-width: 767px){
+    .newPostCard{
+        width:90% !important;
+    }
+}
+@media screen and (max-width: 650px){
+    .newPostCard{
+        width:100% !important;
+    }
+}

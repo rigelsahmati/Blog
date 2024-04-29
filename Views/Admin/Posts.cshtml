@@ -1,0 +1,187 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Blog.Areas.Identity.Data
+@inject UserManager<User> UserManager
+@model Blog.Models.Admin.ViewPostsModel
+@section Styles {
+    <link rel="stylesheet" href="@Url.Content("~/css/viewPosts.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/post.css")" />
+}
+@{
+    var Message = TempData["Message"];
+    var Type = TempData["Type"];
+    var categorieId = ViewBag.CategorieId;
+}
+
+<div class="menu-control d-flex w-100">
+    <button class="side-menu-open-btn border-0 footer-btn p-2 rounded-2 menu-btn" title="Open Menu">
+        <i class="fa-solid fa-bars fs-6"></i>
+    </button>
+    <div class="main-title ms-5 w-100 align-items-center gap-3 d-flex ">
+        <h3 class="m-0 pageTitle">@Model.PageTitle</h3>
+        <p class="rounded-1 m-0 bg-white py-1 px-2  border border-1" style="border-color: var(--black) !important;">@Model.Posts.Count()</p>
+    </div>
+</div>
+
+<div class="main-body w-100 d-flex gap-3">
+    <div class="main-content  rounded-3 w-100 mt-4 ">
+
+
+        <div class="w-100 p-2 d-flex flex-wrap align-content-start justify-content-center">
+            <div class="w-100 border-bottom border-1 p-2 mb-4 d-flex justify-content-between align-items-end">
+
+                <div class="col-md-4 me-4">
+                    <h4>Search</h4>
+                    <input id="searchUser" class="form-control w-100" type="text" placeholder="Search by Username or Post" />
+                </div>
+
+                <button type="button" class="btn border border-2 filterBtn">
+                    <i class="fa-solid fa-sliders me-1"></i>
+                    Filter
+                </button>
+
+            </div>
+
+            <div class="categorie-parent d-flex w-100 py-3 mb-3 gap-3 flex-wrap post-parent-hidden">
+                @foreach(var c in Model.Categories)
+                {
+                    <button id="@c.Id" type="button" class="categorie d-flex gap-2 align-items-center p-2 border border-1 rounded-3" style="border-color:var(--black) !important;">
+                        <i class="fa-solid @c.Icon"></i>
+                        <p class="m-0">@c.Name</p>
+                    </button>
+                }
+            </div>
+
+            <div class="post-parent d-flex flex-column gap-3 align-items-center">
+                @{
+                    if (Model.Posts == null || Model.Posts.Count() == 0)
+                    {
+                        <img class="mt-5" width="100px" height="100px" src="/images/notFoundFolder.png" style="width:100px !important; height:100px !important;" />
+                        <h3>Nothing was Found.</h3>
+                    }
+
+                    foreach (var p in Model.Posts.OrderByDescending(x => x.CreatedTime))
+                    {
+                        <div class="col-md-7 post position-relative p-3 rounded-3 mt-2">
+                            <div class="post-header d-flex">
+
+                                <a asp-action="ViewUser" asp-route-id="@p.UserId">
+                                    <img src="~/uploads/img/usersImg/@p.User.ProfileImage" width="40px" height="40px" class="postUserImg" />
+                                </a>
+                                <div class="ms-3 w-100 d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <a asp-action="ViewUser" asp-route-id="@p.UserId">
+                                            <p class="m-0 postUsername">@p.User.FullName</p>
+                                        </a>
+                                        <p class="m-0 postDate">@p.CreatedTime.ToString("HH:mm dd/MM/yyyy")</p>
+                                    </div>
+                                    
+                                </div>
+
+                            </div>
+                            <div class="postBody w-100 mt-2">
+                                <div class="w-100 d-flex justify-content-center rounded-3" style="background:#222222;">
+                                    <img src="~/uploads/img/postImg/@p.ImageUrl" class="postImg " />
+                                </div>
+                                <div class="postTitle mt-2 p-2">
+                                    <a asp-controller="Blog" asp-action="Post" asp-route-id="@p.id" id="postUrlId-@p.id" class="w-100 m-0 fs-5">
+                                        @p.Title
+                                    </a>
+                                </div>
+                                <div class="likeCount mt-2 p-2 border-top d-flex justify-content-between">
+                                    <p class="m-0">
+                                        <i class="fa-solid fa-thumbs-up"></i>
+                                        <b id="likeCount-@p.id" class="m-0">@p.Likes.Count</b>
+                                    </p>
+                                    <p class="m-0">
+                                        <i class="fa-solid fa-comment"></i>
+                                        @p.Coments.Count()
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="postFooter w-100 btn-group mt-2 p-2 border-top rounded-0">
+                                @if (p.Liked)
+                                {
+                                    <button id="likeBtn-@p.id" data-userId="@UserManager.GetUserId(User)" data-postId="@p.id" class="like-btn-active like-btn col btn ">
+                                        <i class="fa-solid fa-thumbs-up"></i>
+                                        Like
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button id="likeBtn-@p.id" data-userId="@UserManager.GetUserId(User)" data-postId="@p.id" class="like-btn col btn ">
+                                        <i class="fa-solid fa-thumbs-up"></i>
+                                        Like
+                                    </button>
+                                }
+                                <a href="/Blog/Post/@p.id#coment" class="col btn">
+                                    <i class="fa-solid fa-comment"></i>
+                                    Comment
+                                </a>
+                                <button data-urlId="@p.id" class="copyLinkBtn col btn shareBtn">
+                                    <i class="fa-solid fa-share"></i>
+                                    Share
+                                </button>
+                            </div>
+                        </div>
+                    }
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/assets/plugins/toast-master/js/jquery.toast.js"></script>
+    <script src="~/js/posts.js"></script>
+    <script src="~/js/post.js"></script>
+    <script src="~/js/like.js"></script>
+    @if (categorieId != null)
+    {
+        <script>
+
+            $(document).ready(function () {
+                setTimeout(
+                    function () {
+                        document.getElementById(`${@categorieId}`).click();
+                }, 300);
+            });
+
+        </script>
+    }
+    @if (Message != null)
+    {
+        if (Type == "Error")
+        {
+            <script>
+                $.toast({
+                    heading: 'Attention!',
+                    text: '@Message',
+                    position: 'top-right',
+                    loaderBg: '#e38383',
+                    icon: 'error',
+                    hideAfter: 3500,
+                    stack: 6
+                });
+            </script>
+        }
+        else if (Type == "Sucess")
+        {
+            <script>
+                $.toast({
+                    heading: 'Success!',
+                    text: '@Message',
+                    position: 'top-right',
+                    loaderBg: '#ff6849',
+                    icon: 'success',
+                    hideAfter: 3500,
+                    stack: 6
+                });
+            </script>
+        }
+
+    }
+    
+}

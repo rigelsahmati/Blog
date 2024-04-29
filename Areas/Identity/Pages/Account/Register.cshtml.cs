@@ -19,6 +19,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Blog.Repos;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Blog.Areas.Identity.Pages.Account
 {
@@ -30,13 +32,15 @@ namespace Blog.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<User> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly IRoleRepo _roleRepo;
 
         public RegisterModel(
             UserManager<User> userManager,
             IUserStore<User> userStore,
             SignInManager<User> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IRoleRepo roleRepo)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -44,6 +48,7 @@ namespace Blog.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _roleRepo = roleRepo;
         }
 
         /// <summary>
@@ -80,6 +85,18 @@ namespace Blog.Areas.Identity.Pages.Account
             [Display(Name = "Email")]
             public string Email { get; set; }
 
+            [Required]
+            [DataType(DataType.Text)]
+            [Display(Name = "Full Name")]
+            public string fullName { get; set; }
+
+
+            [Required]
+            [DataType(DataType.Text)]   
+            [Display(Name = "Username")]
+            public string userName { get; set; }
+
+
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -98,25 +115,57 @@ namespace Blog.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
+            [Required]
+            [DataType(DataType.Text)]
+            [Display(Name = "Role")]
+            public int Role { get; set; }
         }
 
 
         public async Task OnGetAsync(string returnUrl = null)
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                Response.Redirect("/");
+            }
+            var roles = await _roleRepo.GetAll();
+            ViewData["Roles"] = roles.Where(x => x.id != 1).ToList();
+
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
+            List<string> profilecovers = new() { "defaultUserCover-1.jpg", "defaultUserCover-2.jpg", "defaultUserCover-3.jpg", "defaultUserCover-4.jpg", "defaultUserCover-5.jpeg", "defaultUserCover-6.jpeg"};
+            Random random = new();
+            int randomIndex = random.Next(0, profilecovers.Count);
+
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
+                var role = await _roleRepo.Get(Input.Role);
+                if(role == null)
+                {
+                    var UserRoles = await _roleRepo.GetAll();
+                    ViewData["Roles"] = UserRoles.Where(x => x.id != 1).ToList();
+                    ModelState.AddModelError(string.Empty, "Please select a valid role");
+                    return Page();
+                }
                 var user = CreateUser();
-
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+                user.FullName = Input.fullName;
+                user.UserName = Input.userName;
+                user.CreatedTime = DateTime.Now;
+                user.CoverImage = profilecovers[randomIndex];
+                user.ProfileImage = "defaultUserImage.jpg";
+                user.RoleId = Input.Role;
+                user.LockoutEnabled = false;
+                user.LockoutEnd = null;
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
@@ -150,7 +199,8 @@ namespace Blog.Areas.Identity.Pages.Account
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
-
+            var roles = await _roleRepo.GetAll();
+            ViewData["Roles"] = roles.Where(x => x.id != 1).ToList();
             // If we got this far, something failed, redisplay form
             return Page();
         }

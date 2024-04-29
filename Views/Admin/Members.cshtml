@@ -1,0 +1,159 @@
+﻿@model Blog.Models.Admin.ViewUsersModel
+@section Styles {
+    <link rel="stylesheet" href="@Url.Content("~/css/usersDashboard.css")" />
+}
+@{
+    var Message = TempData["Message"];
+    var Type = TempData["Type"];
+}
+
+<div class="menu-control d-flex w-100">
+    <button class="side-menu-open-btn border-0 footer-btn p-2 rounded-2 menu-btn" title="Open Menu">
+        <i class="fa-solid fa-bars fs-6"></i>
+    </button>
+    <div class="main-title ms-5 w-100 align-items-center gap-3 d-flex ">
+        <h1 class="m-0 pageTitle">@Model.PageTitle</h1>
+    </div>
+</div>
+
+<div class="main-body w-100 d-flex gap-3">
+    <div class="main-content  rounded-3 w-100 mt-4 ">
+
+
+        <div class="w-100 p-2 d-flex flex-wrap align-content-start">
+            <div class="w-100 border-bottom border-1 p-2 mb-4 d-flex justify-content-between">
+
+                <div class="me-4">
+                    <h4>Search</h4>
+                    <input id="searchUser" class="form-control w-100" type="text" placeholder="Enter Username" />
+                </div>
+            </div>
+            <div class="users-parent w-100 d-flex flex-wrap gap-3">
+                @{
+                    if (Model.Users == null || Model.Users.Count() == 0)
+                    {
+                        <h3 class="text-center w-100 mt-5">Users List Is Empty.</h3>
+                    }
+                    foreach (var u in Model.Users.OrderByDescending(x => x.Id))
+                    {
+                        <div class="user d-flex rounded-2 border border-1" style="border-color:var(--black) !important;">
+                            <div class="w-100 d-flex">
+                                <img src="~/uploads/img/usersImg/@u.ProfileImage" width="40%" height="100%" style="object-fit:cover; border-radius: 5px 0 0 5px;" />
+                                <div class="p-2 d-flex flex-column w-100 justify-content-between">
+                                    <div class="d-flex flex-column gap-1">
+                                        <p class="mb-3 userUsername">@u.FullName</p>
+                                        <p class="m-0 userDetails">@u.Role.Name</p>
+                                        <p class="m-0 userDetails">@u.Email</p>
+                                        <p class="m-0 userDetails">@u.Posts.Count() Posts</p>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <p class="m-0 userDate">Joined at: @u.CreatedTime.ToString("dd/MM/yyyy")</p>
+                                        <a asp-action="ViewUser" asp-route-id="@u.Id" class="border border-1 rounded-2 py-1 px-3" style="border-color:var(--black) !important">
+                                            <i class="fa-solid fa-expand pe-2"></i>
+                                            View More
+                                        </a>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    }
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/assets/plugins/toast-master/js/jquery.toast.js"></script>
+    <script>
+        var defaultHtml;
+        window.onload = (event) => {
+            defaultHtml = document.querySelector('.users-parent').innerHTML;
+            document.querySelector('#members').classList.add('menu-iteme-active');
+            document.querySelector('#members').children[0].children[0].style.color = "#f16363";
+        }
+        $('#searchUser').on('input', function () {
+            var inputValue = $(this).val();
+            var roleType = 3;
+            if (inputValue.length < 3) {
+                document.querySelector('.users-parent').innerHTML = defaultHtml;
+                return;
+            };
+            $.ajax({
+                type: 'GET',
+                url: "/Admin/GetByUsername",
+                dataType: "json",
+                data: { username: $('#searchUser').val(), roleType: roleType },
+                success: function (result) {
+                }
+            });
+        });
+        function handleResponse(data) {
+
+            data.forEach((user) => {
+                var userHtml =
+                    `<div class="user d-flex rounded-2 border border-1" style="border-color:var(--black) !important;">
+                                    <div class="w-100 d-flex">
+                                        <img src="/uploads/img/usersImg/${user.image}" width="40%" height="100%" style="object-fit:cover; border-radius: 5px 0 0 5px;" />
+                                        <div class="p-2 d-flex flex-column w-100 justify-content-between">
+                                            <div class="d-flex flex-column gap-1">
+                                                <p class="mb-3 userUsername">${user.fullName}</p>
+                                                <p class="m-0 userDetails">${user.role}</p>
+                                                <p class="m-0 userDetails">${user.email}</p>
+                                                <p class="m-0 userDetails">${user.blogs} Posts</p>
+                                            </div>
+
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <p class="m-0 userDate">Joined at: ${user.dateJoined}</p>
+                                                <a asp-action="ViewUser" asp-route-id="${user.id}" class="border border-1 rounded-2 py-1 px-3" style="border-color:var(--black) !important">
+                                                    <i class="fa-solid fa-expand pe-2"></i>
+                                                    View More
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>`;
+                document.querySelector('.users-parent').innerHTML += userHtml;
+
+            })
+        }
+    </script>
+    @if (Message != null)
+    {
+        if (Type == "Error")
+        {
+            <script>
+                $.toast({
+                    heading: 'Attention!',
+                    text: '@Message',
+                    position: 'top-right',
+                    loaderBg: '#e38383',
+                    icon: 'error',
+                    hideAfter: 3500,
+                    stack: 6
+                });
+            </script>
+        }
+        else if (Type == "Sucess")
+        {
+            <script>
+                $.toast({
+                    heading: 'Success!',
+                    text: '@Message',
+                    position: 'top-right',
+                    loaderBg: '#ff6849',
+                    icon: 'success',
+                    hideAfter: 3500,
+                    stack: 6
+                });
+            </script>
+        }
+
+    }
+}

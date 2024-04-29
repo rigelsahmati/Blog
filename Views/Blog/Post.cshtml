@@ -1,0 +1,263 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Blog.Areas.Identity.Data
+@inject UserManager<User> UserManager
+@model Blog.Models.Blog.ViewPostModel
+@section Styles {
+    <link rel="stylesheet" href="@Url.Content("~/css/index.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/post.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/viewPost.css")" />
+    
+}
+@{
+    var user = await UserManager.GetUserAsync(User);
+    var Message = TempData["Message"];
+    var msgType = TempData["Type"] as System.String;
+}
+
+
+
+<div class="menu-control d-flex w-100">
+    <button class="side-menu-open-btn border-0 footer-btn p-2 rounded-2 menu-btn" title="Open Menu">
+        <i class="fa-solid fa-bars fs-6"></i>
+    </button>
+    <div class="main-title ms-5 w-100 align-items-center gap-3 d-flex justify-content-between position-relative">
+        <h3 class="m-0 pageTitle d-flex gap-3 align-items-center">
+        </h3>
+        @{
+            if(user.RoleId != 1)
+            {
+                <div class="searchParent rounded-3 p-0 position-absolute">
+                    <form method="post" asp-action="Search">
+                        <input id="searchUser" class="searchInput form-control w-100" type="text" placeholder="Search" name="q" />
+                        <div class="searchBody searchBody-hidden p-2">
+                        </div>
+                        <button type="submit" class="searchBtn searchBtn-hidden rounded-pill w-100 btn p-2 d-flex gap-2 align-items-center">
+                            <i class="searchIcon fa-solid fa-magnifying-glass p-2 rounded-circle"></i>
+                            Search for <b class="searchFor"></b>
+                        </button>
+                    </form>
+                </div>
+            }
+        }
+        
+    </div>
+</div>
+
+
+<div class="main-body mt-3 w-100 d-flex gap-3">
+    <div class="main-content rounded-3 w-100 mt-4 d-flex flex-column align-items-center gap-3">
+
+        <div class="post-parent d-flex w-100 flex-column align-items-center gap-3">
+
+            <div class="post col-md-9 p-3 mt-3 rounded-3">
+                <div class="post-title mt-4 px-3 border-bottom">
+                    <h3><b>@Model.Post.Title</b></h3>
+                </div>
+                <div class="post-info mt-3 px-3 d-flex gap-3 flex-wrap">
+
+                    <div class="d-flex gap-2 align-items-center">
+                        <i class="fa-solid fa-pen"></i>
+                        <p class="m-0">Writed by: <a asp-controller="Blog" asp-action="Profile" asp-route-id="@Model.Post.User.Id">@Model.Post.User.UserName</a></p>
+                    </div>
+                    <p class="m-0">|</p>
+                    <div class="d-flex gap-2 align-items-center">
+                        <i class="fa-regular fa-calendar-days"></i>
+                        <p class="m-0">Published at: @Model.Post.CreatedTime.ToString("dd/MM/yyyy, hh:mm ")</p>
+                    </div>
+
+
+                </div>
+                <div class="post-image mt-3 w-100 d-flex align-items-center justify-content-center rounded-4" style="height:25rem;background:#222222; ">
+                    <img class="" style="object-fit: contain; max-width: 100%; max-height: 100%;" src="/uploads/img/postImg/@Model.Post.ImageUrl" />
+                </div>
+                <hr />
+                <div class="post-context m mt-5 w-100 px-3">
+                    @Html.Raw(Model.Post.Context.ToString())
+                </div>
+                <div class="mt-5 p-3 w-100">
+                    <div class="likeCount mt-2 p-2 border-top d-flex justify-content-between">
+                        <p class="m-0">
+                            <i class="fa-solid fa-thumbs-up"></i>
+                            <b id="likeCount-@Model.Post.id" class="m-0">@Model.Post.Likes.Count</b>
+                        </p>
+
+                        <p class="m-0">
+                            <i class="fa-solid fa-comment"></i>
+                            <b id="comentCount" class="m-0"> @Model.Post.Coments.Count()</b>
+                        </p>
+                    </div>
+                    <a asp-controller="Blog" asp-action="Post" asp-route-id="@Model.Post.id" id="postUrlId-@Model.Post.id" class="d-none"> </a>
+                    <div class="btn-group w-100 mt-2">
+                        @if (Model.Post.Liked)
+                        {
+                            <button id="likeBtn-@Model.Post.id" data-userId="@UserManager.GetUserId(User)" data-postId="@Model.Post.id" class="like-btn-active like-btn col btn ">
+                                <i class="fa-solid fa-thumbs-up"></i>
+                                Like
+                            </button>
+                        }
+                        else
+                        {
+                            <button id="likeBtn-@Model.Post.id" data-userId="@UserManager.GetUserId(User)" data-postId="@Model.Post.id" class="like-btn col btn ">
+                                <i class="fa-solid fa-thumbs-up"></i>
+                                Like
+                            </button>
+                        }
+                        <button data-urlId="@Model.Post.id" class="copyLinkBtn col btn shareBtn">
+                            <i class="fa-solid fa-share"></i>
+                            Share
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="coment" class="add-coment p-3 col-md-8 border border-1 rounded-3">
+                <form class="addComentForm d-flex gap-3 flex-column" onsubmit="return false">
+
+                <div class="d-flex gap-3">
+                        <img height="45px" width="50px" class="rounded-circle" src="/uploads/img/usersImg/@user.ProfileImage" style="object-fit: cover;" />
+                    <input type="text" class="addComentInpunt form-control" placeholder="Write a comment" />
+                    <input type="hidden" id="postId" value="@Model.Post.id"/>
+                    <input type="hidden" id="userId" value="@user.Id"/>
+
+                </div>
+                <div class="w-100 d-flex">
+                    <button type="submit" class="btn btn-secondary w-100">Post</button>
+                </div>
+                </form>
+            </div>
+
+            <div id="coments" class="coments mt-3 rounded-3 p-3 pt-0 mx-2 border border-1">
+                <h4 class="w-100 border-bottom py-2 position-sticky top-0 bg-white">Comments</h4>
+                @{
+                    
+                    <div class="comentsParent">
+                     @if (Model.Post.Coments == null || Model.Post.Coments.Count() == 0){<h4 class="w-100 mt-4 py-2 text-center bg-white">This post has 0 comments.</h4>}
+                    @foreach (var c in Model.Post.Coments.OrderByDescending(x => x.CreatedTime))
+                    {
+                        <div class="w-100 my-3 border border-1 rounded-3 p-3">
+                            <div class="">
+                                    <a asp-controller="Blog" asp-action="Profile" asp-route-id="@c.UserId" class="d-flex gap-3 align-items-center pb-2 border-bottom">
+                                    <img src="/uploads/img/usersImg/@c.User.ProfileImage" width="35px" height="35px" style="border-radius: 100px; object-fit:cover;">
+                                    <p class="m-0">@c.User.UserName</p>
+                                </a>
+                            </div>
+                            <p class="m-2 ms-4 comentContext">@c.ComentContext</p>
+                            <p class="me-2 mb-0 mt-4 w-100 text-end" style="font-size:.8rem">@c.CreatedTime.ToString("yyyy/MM/dd, HH:mm")</p>
+
+                        </div>
+
+                    }
+                    </div>
+                }
+            </div>
+
+            <div class="suggested mt-3 rounded-3 p-3 mx-2 border border-1 w-100">
+                <h5 class="pb-2 mb-3 border-bottom"><b>Latest Posts:</b></h5>
+                <div class="d-flex justify-content-around gap-3">
+                    @{
+                        foreach (var p in Model.LatestPosts.OrderByDescending(t => t.CreatedTime))
+                        {
+                            <a asp-controller="Blog" asp-action="Post" asp-route-id="@p.id" class="suggestedPost">
+                                <div class="lates-post overflow-hidden w-100 h-100 rounded-3 d-flex flex-column gap-3 " style="box-shadow: -2px 3px 20px #8c95ff6b;">
+                                    <div class="w-100" style="height:60%; background: #222222;">
+                                        <img class="w-100 h-100 rounded-top-3" src="/uploads/img/postImg/@p.ImageUrl" style="object-fit:cover;"/>
+                                    </div>
+                                    <div class="w-100 h-50">
+                                        <p class="m-0 mx-3">@p.Title</p>
+                                    </div>
+                                </div>
+
+                            </a>
+                        }
+                    }
+                </div>
+
+                <h5 class="pb-2 mb-3 mt-3 border-bottom"><b>Similar Posts:</b></h5>
+                <div class="d-flex justify-content-around mt-3 gap-3">
+                    @{
+                        foreach (var p in Model.SimilarPosts)
+                        {
+                            <a asp-controller="Blog" asp-action="Post" asp-route-id="@p.id" class="suggestedPost">
+                                <div class="lates-post overflow-hidden w-100 h-100 rounded-3 d-flex flex-column gap-3 " style="box-shadow: -2px 3px 20px #8c95ff6b;">
+                                    <div class="w-100" style="height:60%; background: #222222;">
+                                        <img class="w-100 h-100 rounded-top-3" src="/uploads/img/postImg/@p.ImageUrl" style="object-fit:cover;" />
+                                    </div>
+                                    <div class="w-100 h-50">
+                                        <p class="m-0 mx-3">@p.Title</p>
+                                    </div>
+                                </div>
+
+                            </a>
+                        }
+                    }
+                </div>
+
+            </div>
+          
+
+    </div>
+
+
+</div>
+
+</div>
+
+
+@section Scripts{
+    <script src="~/js/like.js"></script>
+    <script src="~/assets/plugins/toast-master/js/jquery.toast.js"></script>
+    <script src="~/js/search.js"></script>
+    <script src="~/js/post.js"></script>
+    <script src="~/js/addComent.js"></script>
+    @if (Message != null)
+    {
+
+        if (msgType == "Sucess")
+        {
+            <script>
+                new Notify({
+                    status: 'success',
+                    title: '@msgType',
+                    text: '@Message',
+                    effect: 'fade',
+                    speed: 300,
+                    customClass: '',
+                    customIcon: '',
+                    showIcon: true,
+                    showCloseButton: true,
+                    autoclose: true,
+                    autotimeout: 3000,
+                    gap: 20,
+                    distance: 20,
+                    type: 1,
+                    position: 'right top'
+                })
+            </script>
+            return;
+        }
+        if (msgType == "Error")
+        {
+            <script>
+                new Notify({
+                    status: 'error',
+                    title: 'Notify Title',
+                    text: 'Notify text lorem ipsum',
+                    effect: 'fade',
+                    speed: 300,
+                    customClass: '',
+                    customIcon: '',
+                    showIcon: true,
+                    showCloseButton: true,
+                    autoclose: true,
+                    autotimeout: 3000,
+                    gap: 20,
+                    distance: 20,
+                    type: 1,
+                    position: 'right top'
+                })
+            </script>
+            return;
+        }
+
+    }
+}
