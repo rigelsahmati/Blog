@@ -1,29 +1,26 @@
 ﻿@{
     if (ViewData.TryGetValue("ParentLayout", out var parentLayout) && parentLayout !=  null)
     {
-        Layout = parentLayout.ToString();
+      //  Layout = parentLayout.ToString();
+        Layout = "~/Views/Shared/_SettingsLayout.cshtml";
     }
     else
     {
-        Layout = "/Areas/Identity/Pages/_Layout.cshtml";
+        Layout = "~/Views/Shared/_SettingsLayout.cshtml";
     }
 }
 
-<h1>Manage your account</h1>
 
-<div>
-    <h2>Change your account settings</h2>
-    <hr />
-    <div class="row">
-        <div class="col-md-3">
+    <div class="d-flex h-100 w-100">
+        <div class="d-flex gap-2 w-50 navTab">
             <partial name="_ManageNav" />
         </div>
-        <div class="col-md-9">
+        <div class="w-100 h-100 p-3">
             @RenderBody()
         </div>
     </div>
-</div>
 
 @section Scripts {
     @RenderSection("Scripts", required: false)
 }
+

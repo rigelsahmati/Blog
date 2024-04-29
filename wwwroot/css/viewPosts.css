@@ -1,0 +1,121 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --black: rgb(68, 68, 68);
+    --yellow: rgb(255 212 59);
+    --grey: rgb(244, 244, 244);
+    --dark-grey: rgb(235, 235, 235);
+    --white: rgb(255, 255, 255);
+}
+
+.underline-0 {
+    text-decoration: none !important;
+}
+
+.filterBtn {
+    border-color: var(--black) !important;
+    outline:none;
+    width:20% !important;
+    height: fit-content;
+    transition: all .3s
+}
+
+.filterBtn-active {
+    color: white !important;
+    background: var(--black) !important;
+    border-color: transparent !important;
+}
+
+.filterBtn:hover {
+    background: var(--dark-grey);
+}
+
+.profileContent {
+    width: 80%;
+}
+
+.post-parent{
+    width: 70%;
+}
+.post-parent-hidden{
+    opacity: 0;
+    display: none !important;
+}
+.categorie-parent {
+        border-top: 1px solid var(--black);
+        border-bottom: 1px solid var(--black);
+        transition: all .3s;
+    }
+.categorie-parent > div > i{
+    font-size:smaller;
+}
+button.categorie {
+    background-color: transparent;
+}
+.categorie:hover{
+    background:var(--dark-grey);
+}
+.categorie-active{
+    color: white !important;
+    background: var(--black) !important;
+}
+
+
+
+/*     POST SYLE    */
+.post {
+    background: var(--dark-grey);
+    width: 100%;
+}
+
+.postUserImg {
+    border-radius: 100px;
+    object-fit: cover;
+}
+
+.postUsername {
+    font-size: .9rem;
+    font-weight: bold !important;
+}
+
+.postDate {
+    font-size: .7rem;
+}
+
+.postImg {
+    height: 20rem;
+}
+
+.likeCount,
+.postTitle,
+.postFooter {
+    border-color: rgb(153 142 142) !important;
+}
+.postFooter > button {
+    transition: all .3s;
+}
+.postFooter > button:hover {
+    background: #d1d1d1;
+}
+
+@media screen and (max-width:800px) {
+    .post-parent {
+        width: 80%;
+    }
+}
+@media screen and (max-width:700px) {
+    .post-parent {
+        width: 100%;
+    }
+    .filterBtn{
+        width: 30% !important;
+    }
+}
+@media screen and (max-width:600px) {
+    .categorie-parent {
+        gap: 10px !important;
+    }
+}

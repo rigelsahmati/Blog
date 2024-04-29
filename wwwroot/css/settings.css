@@ -1,0 +1,33 @@
+﻿*{
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --black: rgb(68, 68, 68);
+    --yellow: rgb(255 212 59);
+    --grey: rgb(244, 244, 244);
+    --dark-grey: rgb(235, 235, 235);
+    --white: rgb(255, 255, 255);
+}
+
+.settingsItem{
+    color: var(--black);
+    background: none;
+    border: 1px solid var(--black) !important;
+    transition: all .3s;
+}
+.settingsItem:hover{
+    background: var(--dark-grey);
+}
+
+.settingsItem.nav-link.active {
+    background: var(--black);
+    color: white !important;
+}
+.navTab{
+    background: var(--grey);
+}
+.settingsTitle{
+    border-color: var(--black) !important;
+}

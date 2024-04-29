@@ -1,0 +1,287 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Blog.Areas.Identity.Data
+@inject UserManager<User> UserManager
+@model Blog.Models.Blog.SearchModel
+@section Styles {
+    <link rel="stylesheet" href="@Url.Content("~/css/index.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/viewUser.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/post.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/search.css")" />
+    <style>
+        .post{
+            width: 100% !important
+        }
+    </style>
+}
+@{
+    var Message = TempData["Message"];
+    var msgType = TempData["Type"] as System.String;
+    var Colors = new List<string> {
+    "rgb(102, 217, 232);",
+    "rgb(255, 212, 59);",
+    "#ea868f",
+    "rgb(255, 107, 107);",
+    "#4DD0E1;",
+    "#E1BEE7",
+    "#795548",
+    "#A5D6A7",
+    "#ff8844",
+    "#a2ff79",
+    };
+}
+
+
+
+<div class="menu-control d-flex w-100">
+    <button class="side-menu-open-btn border-0 footer-btn p-2 rounded-2 menu-btn" title="Open Menu">
+        <i class="fa-solid fa-bars fs-6"></i>
+    </button>
+    <div class="main-title ms-5 w-100 align-items-center gap-3 d-flex justify-content-between position-relative">
+        <h3 class="m-0 pageTitle d-flex gap-3 align-items-center">
+            <i class="fa-solid fa-magnifying-glass" style="font-size:60%;"></i>
+            Search result for: <b class="fs-5">"@Model.PageTitle"</b>
+        </h3>
+        <div class="searchParent rounded-3 p-0 position-absolute">
+            <form method="post" asp-action="Search">
+                <input id="searchUser" class="searchInput form-control w-100" type="text" placeholder="Search" name="q" />
+                <div class="searchBody searchBody-hidden p-2">
+                </div>
+                <button type="submit" class="searchBtn searchBtn-hidden rounded-pill w-100 btn p-2 d-flex gap-2 align-items-center">
+                    <i class="searchIcon fa-solid fa-magnifying-glass p-2 rounded-circle"></i>
+                    Search for <b class="searchFor"></b>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="main-body mt-3 w-100 d-flex gap-3">
+    <div class="main-content rounded-3 w-100 mt-4">
+
+        <div class="d-flex w-100 flex-column align-items-center gap-3">
+            <div class="w-75 d-flex btn-group mb-5">
+                <button id="users" class="searchBtnAction searchBtnAction-active btn border border-1"><i class="me-2 fa-solid fa-user-group"></i>Users</button>
+                <button id="posts" class="searchBtnAction btn border border-1"><i class="me-2 fa-solid fa-envelopes-bulk"></i>Posts</button>
+                <button id="categories" class="searchBtnAction btn border border-1"><i class="me-2 fa-solid fa-table-cells-large"></i>Categories</button>
+            </div>
+            <input type="hidden" class="userId" value="@Model.User.Id" />
+            <div id="searchParent-users" class="serachResult-active users w-100 d-flex flex-wrap gap-3">
+                @{
+
+                    if (Model.Users == null || Model.Users.Count() == 0)
+                    {
+                        <h3 class="text-center w-100 mt-4">No user was Found.</h3>
+                    }
+
+                    foreach (var u in Model.Users)
+                    {
+                        <div class="user d-flex rounded-2 border border-1" style="border-color:var(--black) !important;">
+                            <div class="w-100 d-flex">
+                                <img src="~/uploads/img/usersImg/@u.ProfileImage" width="40%" height="100%" style="object-fit:cover; border-radius: 5px 0 0 5px;" />
+                                <div class="p-2 d-flex flex-column w-100 justify-content-between">
+                                    <div class="d-flex flex-column gap-1">
+                                        <p class="mb-3 userUsername">@u.UserName</p>
+                                        <p class="mb-3 userUsername">@u.FullName</p>
+                                        <p class="m-0 userDetails">@u.Posts.Count() Posts</p>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <p class="m-0 userDate">Joined at: @u.CreatedTime.ToString("dd/MM/yyyy")</p>
+                                        <a asp-action="Profile" asp-route-id="@u.Id" class="border border-1 rounded-2 py-1 px-3" style="border-color:var(--black) !important">
+                                            <i class="fa-solid fa-expand pe-2"></i>
+                                            View More
+                                        </a>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+            <div id="searchParent-posts" class="posts serachResult-hidden slide-out-bottom">
+                @{
+
+                    if (Model.Posts == null || Model.Posts.Count() == 0)
+                    {
+                        <h3 class="text-center w-100 mt-4">No posts were Found.</h3>
+                    }
+
+                    foreach (var p in Model.Posts.OrderByDescending(x => x.CreatedTime))
+                    {
+                        <div class="post col-md-7 position-relative p-3 rounded-3 mt-2 post-@p.id">
+                            <div class="post-header d-flex">
+
+                                <a asp-action="Profile" asp-route-id="@p.UserId">
+                                    <img src="~/uploads/img/usersImg/@p.User.ProfileImage" width="40px" height="40px" class="postUserImg" />
+                                </a>
+                                <div class="ms-3 w-100 d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <a asp-action="Profile" asp-route-id="@p.UserId">
+                                            <p class="m-0 postUsername">@p.User.FullName</p>
+                                        </a>
+                                        <p class="m-0 postDate">@p.CreatedTime.ToString("HH:mm dd/MM/yyyy")</p>
+                                    </div>
+                                    @if (Model.User.Posts.Contains(p))
+                                    {
+                                        <button data-actionsId="@p.id" class="actionsBtn border border-0 btn">
+                                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                                        </button>
+                                        <div id="actionsParent-@p.id" class="actionsParent rounded-3 p-2">
+                                            <a asp-asp-controller="Blog" asp-action="EditPost" asp-route-postId="@p.id" class="btn text-start"><i class="fa-solid fa-pen me-2"></i> Edit Post</a>
+                                            <button data-postId="@p.id" class="addToDraftsBtn btn text-start"><i class="fa-solid fa-envelope-open-text me-2"></i>Add To Drafts</button>
+                                            <button data-postId="@p.id" class="deleteBtn btn text-start"><i class="fa-solid fa-trash me-2"></i>Delete Post</button>
+                                        </div>
+                                    }
+                                </div>
+
+                            </div>
+                            <div class="postBody w-100 mt-2">
+                                <div class="w-100 d-flex justify-content-center rounded-3" style="background:#222222;">
+                                    <img src="~/uploads/img/postImg/@p.ImageUrl" class="postImg " />
+                                </div>
+                                <div class="postTitle mt-2 p-2">
+                                    <a asp-controller="Blog" asp-action="Post" asp-route-id="@p.id" id="postUrlId-@p.id" class="w-100 m-0 fs-5">
+                                        @p.Title
+                                    </a>
+                                </div>
+                                <div class="likeCount mt-2 p-2 border-top d-flex justify-content-between">
+                                    <p class="m-0">
+                                        <i class="fa-solid fa-thumbs-up"></i>
+                                        <b id="likeCount-@p.id" class="m-0">@p.Likes.Count</b>
+                                    </p>
+                                    <p class="m-0">
+                                        <i class="fa-solid fa-comment"></i>
+                                        @p.Coments.Count()
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="postFooter w-100 btn-group mt-2 p-2 border-top rounded-0">
+                                @if (p.Liked)
+                                {
+                                    <button id="likeBtn-@p.id" data-userId="@UserManager.GetUserId(User)" data-postId="@p.id" class="like-btn-active like-btn col btn ">
+                                        <i class="fa-solid fa-thumbs-up"></i>
+                                        Like
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button id="likeBtn-@p.id" data-userId="@UserManager.GetUserId(User)" data-postId="@p.id" class="like-btn col btn ">
+                                        <i class="fa-solid fa-thumbs-up"></i>
+                                        Like
+                                    </button>
+                                }
+                                <button class="col btn">
+                                    <i class="fa-solid fa-comment"></i>
+                                    Commet
+                                </button>
+                                <button data-urlId="@p.id" class="copyLinkBtn col btn shareBtn">
+                                    <i class="fa-solid fa-share"></i>
+                                    Share
+                                </button>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+            <div id="searchParent-categories" class="categories w-100 d-flex flex-wrap serachResult-hidden slide-out-bottom">
+
+                @{
+                    if (Model.Categories == null || Model.Categories.Count() == 0)
+                    {
+                        <h3 class="text-center w-100 mt-4">No categorie was found.</h3>
+                    }
+                    foreach (var c in Model.Categories.OrderByDescending(x => x.PostCategories.Count))
+                    {
+                        Random random = new Random();
+                        int randomIndex = random.Next(0, Colors.Count);
+
+                        <div class="categorie d-flex flex-column justify-content-between m-3 rounded-2 border border-1" style="border-color:var(--black) !important;">
+                            <div class="categorieColor w-100" style=" background:@Colors[randomIndex]"></div>
+                            <div class="p-3">
+                                <div class="d-flex gap-2 align-items-center">
+                                    <i class="fa-solid @c.Icon"></i>
+                                    <h4 class="m-0">@c.Name</h4>
+                                </div>
+                                <p>@c.PostCategories.Count posts published.</p>
+                            </div>
+                            <div class="w-100 d-flex justify-content-end p-2">
+                                <a asp-action="Posts" asp-route-categorieId="@c.Id" class="categoriePostsBtn rounded-2 border border-1 p-2" style="border-color:var(--black) !important;">
+                                    View Posts
+                                </a>
+                            </div>
+                        </div>
+
+                        Colors.Remove(Colors[randomIndex]);
+                    }
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@section Scripts{
+    <script src="~/js/like.js"></script>
+    <script src="~/js/search.js"></script>
+    <script src="~/js/post.js"></script>
+    <script src="~/js//searchResult.js"></script>
+    <script src="~/js/myPosts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @if (Message != null)
+    {
+
+        if (msgType == "Sucess")
+        {
+            <script>
+                new Notify({
+                    status: 'success',
+                    title: '@msgType',
+                    text: '@Message',
+                    effect: 'fade',
+                    speed: 300,
+                    customClass: '',
+                    customIcon: '',
+                    showIcon: true,
+                    showCloseButton: true,
+                    autoclose: true,
+                    autotimeout: 3000,
+                    gap: 20,
+                    distance: 20,
+                    type: 1,
+                    position: 'right top'
+                });
+            </script>
+            return;
+        }
+        if (msgType == "Error")
+        {
+            <script>
+                new Notify({
+                    status: 'error',
+                    title: 'Notify Title',
+                    text: 'Notify text lorem ipsum',
+                    effect: 'fade',
+                    speed: 300,
+                    customClass: '',
+                    customIcon: '',
+                    showIcon: true,
+                    showCloseButton: true,
+                    autoclose: true,
+                    autotimeout: 3000,
+                    gap: 20,
+                    distance: 20,
+                    type: 1,
+                    position: 'right top'
+                })
+            </script>
+            return;
+        }
+
+    }
+}

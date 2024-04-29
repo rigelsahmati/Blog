@@ -1,0 +1,196 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Blog.Areas.Identity.Data
+@inject UserManager<User> UserManager
+@model Blog.Models.Blog.PostsIndexModel
+@section Styles {
+    <link rel="stylesheet" href="@Url.Content("~/css/index.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/viewUser.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/post.css")" />
+}
+@{
+    var Message = TempData["Message"];
+    var msgType = TempData["Type"] as System.String;
+}
+
+<div class="menu-control d-flex w-100">
+    <button class="side-menu-open-btn border-0 footer-btn p-2 rounded-2 menu-btn" title="Open Menu">
+        <i class="fa-solid fa-bars fs-6"></i>
+    </button>
+    <div class="main-title ms-5 w-100 align-items-center gap-3 d-flex justify-content-between position-relative">
+        <h3 class="m-0 pageTitle d-flex gap-3 align-items-center">
+            <i class="fa-solid fa-envelope-open-text" style="font-size: 60%;"></i>
+            @Model.PageTitle
+        </h3>
+        <div class="searchParent rounded-3 p-0 position-absolute">
+            <form method="post" asp-action="Search">
+                <input id="searchUser" class="searchInput form-control w-100" type="text" placeholder="Search" name="q" />
+                <div class="searchBody searchBody-hidden p-2">
+                </div>
+                <button type="submit" class="searchBtn searchBtn-hidden rounded-pill w-100 btn p-2 d-flex gap-2 align-items-center">
+                    <i class="searchIcon fa-solid fa-magnifying-glass p-2 rounded-circle"></i>
+                    Search for <b class="searchFor"></b>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="main-body mt-3 w-100 d-flex gap-3">
+    <div class="main-content rounded-3 w-100 mt-4">
+
+
+        <div class="d-flex w-100 flex-column align-items-center gap-3">
+            <input type="hidden" class="userId" value="@Model.User.Id" />
+            @{
+                if (Model.Posts == null || Model.Posts.Count() == 0)
+                {
+                    <img class="mt-5" src="/images/notFoundFolder.png" />
+                    <h3>Nothing was Found.</h3>
+                }
+
+                foreach (var p in Model.Posts.OrderByDescending(x => x.CreatedTime))
+                {
+                    <div class="col-md-7 post position-relative p-3 rounded-3 mt-2 post-@p.id">
+                        <div class="post-header d-flex">
+
+                            <a asp-action="Profile" asp-route-id="@p.UserId">
+                                <img src="~/uploads/img/usersImg/@p.User.ProfileImage" width="40px" height="40px" class="postUserImg" />
+                            </a>
+                            <div class="ms-3 w-100 d-flex align-items-center justify-content-between">
+                                <div>
+                                    <a asp-action="Profile" asp-route-id="@p.UserId">
+                                        <p class="m-0 postUsername">@p.User.FullName</p>
+                                    </a>
+                                    <p class="m-0 postDate">@p.CreatedTime.ToString("HH:mm dd/MM/yyyy")</p>
+                                </div>
+                                <button data-actionsId="@p.id" class="actionsBtn border border-0 btn">
+                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                </button>
+                                <div id="actionsParent-@p.id" class="actionsParent rounded-3 p-2">
+                                    <a asp-asp-controller="Blog" asp-action="EditPost" asp-route-postId="@p.id" class="btn text-start"><i class="fa-solid fa-pen me-2"></i> Edit Post</a>
+                                    <button data-postId="@p.id" class="addToDraftsBtn btn text-start"><i class="fa-solid fa-upload me-2"></i>Remove From Drafts</button>
+                                    <button data-postId="@p.id" class="deleteBtn btn text-start"><i class="fa-solid fa-trash me-2"></i>Delete Post</button>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="postBody w-100 mt-2">
+                            <div class="w-100 d-flex justify-content-center rounded-3" style="background:#222222;">
+                                <img src="~/uploads/img/postImg/@p.ImageUrl" class="postImg " />
+                            </div>
+                            <div class="postTitle mt-2 p-2">
+                                <a asp-controller="Blog" asp-action="Post" asp-route-id="@p.id" id="postUrlId-@p.id" class="w-100 m-0 fs-5">
+                                    @p.Title
+                                </a>
+                            </div>
+                            <div class="likeCount mt-2 p-2 border-top d-flex justify-content-between">
+                                <p class="m-0">
+                                    <i class="fa-solid fa-thumbs-up"></i>
+                                    <b id="likeCount-@p.id" class="m-0">@p.Likes.Count</b>
+                                </p>
+                                <p class="m-0">
+                                    <i class="fa-solid fa-comment"></i>
+                                    @p.Coments.Count()
+                                </p>
+                            </div>
+                        </div>
+                        <div class="postFooter w-100 btn-group mt-2 p-2 border-top rounded-0">
+                            @if (p.Liked)
+                            {
+                                <button id="likeBtn-@p.id" data-userId="@UserManager.GetUserId(User)" data-postId="@p.id" class="like-btn-active like-btn col btn ">
+                                    <i class="fa-solid fa-thumbs-up"></i>
+                                    Like
+                                </button>
+                            }
+                            else
+                            {
+                                <button id="likeBtn-@p.id" data-userId="@UserManager.GetUserId(User)" data-postId="@p.id" class="like-btn col btn ">
+                                    <i class="fa-solid fa-thumbs-up"></i>
+                                    Like
+                                </button>
+                            }
+                            <a href="Blog/Post/@p.id#coment" class="col btn">
+                                <i class="fa-solid fa-comment"></i>
+                                Comment
+                            </a>
+                            <button data-urlId="@p.id" class="copyLinkBtn col btn shareBtn">
+                                <i class="fa-solid fa-share"></i>
+                                Share
+                            </button>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+    </div>
+
+</div>
+
+
+@section Scripts{
+    <script src="~/js/like.js"></script>
+    <script src="~/assets/plugins/toast-master/js/jquery.toast.js"></script>
+    <script src="~/js/search.js"></script>
+    <script src="~/js/post.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/js/myPosts.js"></script>
+    <script>
+        window.onload = (event) => {
+            document.querySelector('#myDrafts').classList.add('menu-iteme-active');
+            document.querySelector('#myDrafts').children[0].children[0].style.color = "#f16363";
+        }
+    </script>
+    @if (Message != null)
+    {
+
+        if (msgType == "Sucess")
+        {
+            <script>
+                new Notify({
+                    status: 'success',
+                    title: '@msgType',
+                    text: '@Message',
+                    effect: 'fade',
+                    speed: 300,
+                    customClass: '',
+                    customIcon: '',
+                    showIcon: true,
+                    showCloseButton: true,
+                    autoclose: true,
+                    autotimeout: 3000,
+                    gap: 20,
+                    distance: 20,
+                    type: 1,
+                    position: 'right top'
+                })
+            </script>
+            return;
+        }
+        if (msgType == "Error")
+        {
+            <script>
+                new Notify({
+                    status: 'error',
+                    title: 'Notify Title',
+                    text: 'Notify text lorem ipsum',
+                    effect: 'fade',
+                    speed: 300,
+                    customClass: '',
+                    customIcon: '',
+                    showIcon: true,
+                    showCloseButton: true,
+                    autoclose: true,
+                    autotimeout: 3000,
+                    gap: 20,
+                    distance: 20,
+                    type: 1,
+                    position: 'right top'
+                })
+            </script>
+            return;
+        }
+
+    }
+}

@@ -1,0 +1,90 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Rubik&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --black: rgb(68, 68, 68);
+    --yellow: rgb(255 212 59);
+}
+
+body {
+    background-image: url('../images/login-background.jpg');
+    font-family: 'Rubik', sans-serif;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-size: cover;
+    background-repeat: no-repeat;
+    display: flex;
+    flex-direction:column;
+    align-items: center;
+    justify-content: center;
+    position:relative;
+    color: var(--black) !important;
+}
+header{
+    position: absolute;
+    top: 0;
+    left:0;
+    width:100%;
+}
+.form-wraper {
+    background-color: white;
+    border-color: transparent !important;
+}
+
+.input-group-text {
+    border-radius: 0.375rem 0 0 0.375rem;
+    height: calc(3.5rem + 2px);
+}
+
+#login-submit, #registerSubmit {
+    border-color: transparent;
+    color: var(--black) !important;
+    background: var(--yellow) !important;
+}
+
+.underline-0 {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline !important;
+}
+footer{
+    display: none;
+}
+@media screen and (max-width: 1000px) and (min-width:851px) {
+    .form-wraper {
+        width: 60% !important;
+    }
+}
+
+@media screen and (max-width: 850px) and (min-width:661px) {
+    .form-wraper {
+        width: 70% !important;
+    }
+}
+
+@media screen and (max-width: 660px) and (min-width:100px) {
+    .form-wraper {
+        width: 95% !important;
+        padding: 1rem !important;
+    }
+
+    .create-account {
+        margin-top: 2.5rem;
+    }
+
+    .input-group,
+    .checkbox {
+        margin-bottom: 1.5rem !important;
+    }
+
+    .input-group-email {
+        margin-top: 2rem;
+    }
+}

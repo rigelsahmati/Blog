@@ -1,67 +1,148 @@
 ﻿@page
 @model RegisterModel
+@section Styles {
+    <link rel="stylesheet" href="@Url.Content("~/css/login.css")" />
+    }
 @{
     ViewData["Title"] = "Register";
+    Layout = "~/Views/Shared/_LoginLayout.cshtml";
+    var roles = ViewData["Roles"] as IEnumerable<Role>;
 }
 
-<h1>@ViewData["Title"]</h1>
+<div class="form-wraper container-sm p-4 border border-2 w-50 rounded rounded-4">
+    <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+        <h1 class="text-center m-0 fw-bold" style="font-size: 2.2rem;">Create a new account</h1>
+        <hr />
+        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+       
 
-<div class="row">
-    <div class="col-md-4">
-        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-            <h2>Create a new account.</h2>
-            <hr />
-            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-            <div class="form-floating mb-3">
+        <div class="row d-flex ">
+
+            <div class="input-group input-group-email has-validation mb-3 w-50">
+                <span class="input-group-text">
+                    <i class="fa-regular fa-circle-user"></i>
+                </span>
+
+                <div class="form-floating is-invalid">
+                    <input asp-for="Input.userName" class="form-control" autocomplete="on" aria-required="true" placeholder="Jhon"  />
+                    <label asp-for="Input.userName"></label>
+                    <span asp-validation-for="Input.userName" class="text-danger"></span>
+                </div>
+
+            </div>
+            
+            <div class="input-group input-group-email has-validation mb-3 w-50">
+                <span class="input-group-text">
+                    <i class="fa-regular fa-circle-user"></i>
+                </span>
+
+                <div class="form-floating is-invalid">
+                    <input asp-for="Input.fullName" class="form-control" autocomplete="on" aria-required="true" placeholder="Jhon"  />
+                    <label asp-for="Input.fullName"></label>
+                    <span asp-validation-for="Input.fullName" class="text-danger"></span>
+                </div>
+
+            </div>    
+
+        </div>
+
+        <div class="input-group has-validation mb-3 w-100">
+            <span class="input-group-text">
+                <i class="fa-solid fa-envelope"></i>
+            </span>
+            <div class="form-floating is-invalid">
                 <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
                 <label asp-for="Input.Email">Email</label>
                 <span asp-validation-for="Input.Email" class="text-danger"></span>
             </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label asp-for="Input.Password">Password</label>
-                <span asp-validation-for="Input.Password" class="text-danger"></span>
+        </div>
+
+        <div class="input-group has-validation mb-3 w-100">
+            <span class="input-group-text">
+                <i class="fa-solid fa-address-card"></i>
+            </span>
+            <div class="form-floating is-invalid">
+                <select asp-for="Input.Role" class="form-select" aria-label="Default select example">
+                    <option selected disabled>Select role</option>
+                    @foreach (var r in roles)
+                    {
+                        <option value="@r.id">@r.Name</option>
+
+                    }
+                </select>
+                <label asp-for="Input.Role"></label>
+                <span asp-validation-for="Input.Role" class="text-danger"></span>
             </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label asp-for="Input.ConfirmPassword">Confirm Password</label>
-                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+        </div>
+
+        <div class="row d-flex ">
+
+            <div class="input-group has-validation mb-3 w-50">
+                <span class="input-group-text">
+                    <i class="fa-solid fa-lock"></i>
+                </span>
+                <div class="form-floating is-invalid">
+                    <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                    <label asp-for="Input.Password">Password</label>
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
             </div>
+
+            <div class="input-group has-validation mb-3 w-50">
+                <span class="input-group-text">
+                    <i class="fa-solid fa-lock"></i>
+                </span>
+                <div class="form-floating is-invalid">
+                    <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                    <label asp-for="Input.ConfirmPassword">Confirm Password</label>
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                </div>
+            </div>
+
+        </div>
+
+
+        
+
+
+        <div class="mb-3">
             <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
-        </form>
-    </div>
-    <div class="col-md-6 col-md-offset-2">
-        <section>
-            <h3>Use another service to register.</h3>
-            <hr />
-            @{
-                if ((Model.ExternalLogins?.Count ?? 0) == 0)
-                {
-                    <div>
-                        <p>
-                            There are no external authentication services configured. See this <a href="https://go.microsoft.com/fwlink/?LinkID=532715">article
-                            about setting up this ASP.NET application to support logging in via external services</a>.
-                        </p>
-                    </div>
-                }
-                else
-                {
-                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
-                        <div>
-                            <p>
-                                @foreach (var provider in Model.ExternalLogins!)
-                                {
-                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
-                                }
-                            </p>
-                        </div>
-                    </form>
-                }
-            }
-        </section>
-    </div>
+        </div>
+
+        <div class="create-account d-flex w-100 justify-content-center align-items-center">
+            <hr class="w-25 mx-2">
+            <p class="text-center m-0">
+                <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl" class="underline-0 text-center"
+                   style="color: var(--black) !important; cursor: pointer;">Log in</a>
+            </p>
+            <hr class="w-25 mx-2">
+
+        </div>
+    </form>
 </div>
 
 @section Scripts {
+
+    <script>
+        $('#registerForm').on('submit', function () {
+            if (!$('#registerForm').valid()) return;
+            JsLoadingOverlay.show({
+                "overlayBackgroundColor": "#666666",
+                "overlayOpacity": "0.7",
+                "spinnerIcon": "ball-clip-rotate-pulse",
+                "spinnerColor": "#ffd43b",
+                "spinnerSize": "2x",
+                "overlayIDName": "overlay",
+                "spinnerIDName": "spinner",
+                "offsetX": 0,
+                "offsetY": 0,
+                "containerID": null,
+                "lockScroll": true,
+                "overlayZIndex": 999,
+                "spinnerZIndex": 999
+            });
+        })
+    </script>
+
     <partial name="_ValidationScriptsPartial" />
 }

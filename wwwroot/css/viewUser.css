@@ -1,0 +1,192 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --black: rgb(68, 68, 68);
+    --yellow: rgb(255 212 59);
+    --grey: rgb(244, 244, 244);
+    --dark-grey: rgb(235, 235, 235);
+    --white: rgb(255, 255, 255);
+}
+
+.underline-0 {
+    text-decoration: none !important;
+}
+
+.images {
+    height: 27rem;
+}
+
+.userImage {
+    position: absolute;
+    width: 10rem;
+    height: 10rem;
+    bottom: 1rem;
+    left: 1rem;
+    border-radius: 100px;
+    object-fit: cover;
+}
+
+.filterBtn {
+    border-color: var(--dark-grey) !important;
+    transition: all .3s;
+    background: white;
+}
+
+.filterBtn-active {
+    background: var(--black) !important;    
+    color:white !important;
+}
+
+.filterBtn:hover {
+    background: rgb(203 203 203);
+}
+
+.profileContent {
+    width: 90%;
+}
+
+.profileInfo {
+    background: white;
+    width: 35%;
+    height: fit-content;
+    position: sticky;
+    top: 0;
+}
+
+.profile {
+    width: 65%;
+}
+
+.profileInfo-Content {
+}
+.post-parent{
+    transition: all .5s;
+}
+
+.datepicker{
+    width: 20rem;
+}
+.table-condensed {
+    width: 100% !important;
+}
+
+
+.filterBtn-active{
+    transition: all .3s;
+    background:black;
+    color: white;
+}
+#clearFilters {
+    transition: all .3s;
+    overflow: hidden;
+    background: #e74646;
+    color: white;
+    border-color:transparent !important;
+    font-size: 90%;
+}
+.filterParent {
+    height: 2.5rem;
+    overflow:hidden;
+    transition: all .3s;
+}
+.filterParent-hidden{
+    height: 0px;
+    opacity:0;
+}
+
+.clearFilters-hidden {
+    width: 0% !important;
+    padding: 0px !important;
+    border: none !important;
+}
+
+.fade-in-top {
+    -webkit-animation: fade-in-top 0.6s cubic-bezier(0.390, 0.575, 0.565, 1.000) both;
+    animation: fade-in-top 0.6s cubic-bezier(0.390, 0.575, 0.565, 1.000) both;
+}
+
+@-webkit-keyframes fade-in-top {
+    0% {
+        -webkit-transform: translateY(-50px);
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+
+    100% {
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fade-in-top {
+    0% {
+        -webkit-transform: translateY(-50px);
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+
+    100% {
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+
+.fade-out-top {
+    -webkit-animation: fade-out-top 0.7s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+    animation: fade-out-top 0.7s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+}
+
+@-webkit-keyframes fade-out-top {
+    0% {
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    100% {
+        -webkit-transform: translateY(-50px);
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+}
+
+@keyframes fade-out-top {
+    0% {
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    100% {
+        -webkit-transform: translateY(-50px);
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+}
+
+.imageSize {
+    font-size: 75%;
+    color: #515151;
+}
+
+@media screen and (max-width:1000px) {
+    .profileContent > .mt-4 > .d-flex.gap-3.mt-4{
+        flex-direction: column;
+    }
+    .profileInfo,
+    .profile{
+        position: static !important;
+        width: 100%;
+    }
+}
+@media screen and (max-width:750px) {
+    .profileContent {
+        width: 100%;
+    }
+}

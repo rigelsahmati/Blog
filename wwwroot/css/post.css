@@ -1,0 +1,108 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --black: rgb(68, 68, 68);
+    --yellow: rgb(255 212 59);
+    --grey: rgb(244, 244, 244);
+    --dark-grey: rgb(235, 235, 235);
+    --white: rgb(255, 255, 255);
+}
+
+.underline-0 {
+    text-decoration: none !important;
+}
+
+/*     POST SYLE    */
+.post {
+    background: white;
+    box-shadow: 0px 5px 12px #8c95ff8a;
+}
+
+.postUserImg {
+    border-radius: 100px;
+    object-fit: cover;
+}
+
+.postUsername {
+    font-size: .9rem;
+    font-weight: bold !important;
+}
+
+.postDate {
+    font-size: .7rem;
+}
+
+.postImg {
+    height: 20rem;
+    width:fit-content;
+    max-width: 100%;
+}
+
+.likeCount,
+.postTitle,
+.postFooter {
+    border-color: rgb(153 142 142) !important;
+}
+
+    .postFooter > button {
+        transition: all .3s;
+    }
+
+        .postFooter > button:hover {
+            background: #d1d1d1;
+        }
+
+
+
+/* Share Section */
+.shareBtn {
+    transition: all .2s
+}
+.postTitle > a:hover{
+    text-decoration: underline !important;
+}
+
+
+/*   Post Owner   */
+
+.actionsParent {
+    position: absolute;
+    top: 0;
+    right: 0%;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    visibility: hidden;
+    display: none;
+    box-shadow: -3px 3px 9px #a3a3a39c !important;
+    width: 35%;
+}
+
+button.btn.text-start:hover,
+a.btn.text-start:hover {
+    background: #ececec !important;
+}
+
+button.btn.text-start,
+a.btn.text-start {
+    font-size: 80%;
+}
+
+.actionsBtn:hover {
+    transition: all .3s;
+    background: #7c7c7c26;
+}
+
+.actionsParent-active {
+    visibility: visible;
+    display: flex;
+}
+
+@media screen and (max-width:650px) {
+    .post{
+        width: 100% !important;
+    }
+}

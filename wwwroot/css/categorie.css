@@ -1,0 +1,40 @@
+﻿
+* {
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --black: rgb(68, 68, 68);
+    --yellow: rgb(255 212 59);
+    --grey: rgb(244, 244, 244);
+    --dark-grey: rgb(235, 235, 235);
+    --white: rgb(255, 255, 255);
+}
+
+.underline-0 {
+    text-decoration: none !important;
+}
+
+.categorie {
+    width: calc(100% / 2 - 2rem);
+    height: 13rem;
+}
+.categorieColor {
+    height: 20px;
+    border-radius: 5px 5px 0 0;
+}
+
+.categoriePostsBtn{
+    width: fit-content;
+    transition: all .3s;
+}
+.categoriePostsBtn:hover {
+    background: var(--black);
+    color: white !important;
+}
+@media screen and (max-width:750px) {
+    .categorie {
+        width: 100%;
+    }
+}

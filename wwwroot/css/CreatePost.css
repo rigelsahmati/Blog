@@ -1,0 +1,232 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --black: rgb(68, 68, 68);
+    --yellow: rgb(255 212 59);
+    --grey: rgb(244, 244, 244);
+    --dark-grey: rgb(235, 235, 235);
+    --white: rgb(255, 255, 255);
+}
+
+.underline-0 {
+    text-decoration: none !important;
+}
+
+
+.post {
+    background: rgb(255 255 255);
+    box-shadow: 0px 5px 12px #8c95ff8a;
+}
+
+
+
+.filepond--drop-label {
+    color: #4c4e53;
+}
+
+.filepond--label-action {
+    text-decoration-color: #babdc0;
+}
+
+.filepond--panel-root {
+    border-radius: 2em;
+    background-color: #edf0f4;
+    height: 1em;
+}
+
+.filepond--item-panel {
+    background-color: #595e68;
+}
+
+.filepond--drip-blob {
+    background-color: #7f8a9a;
+}
+
+#fr-logo {
+    display: none !important;
+}
+
+a.filepond--credits {
+    display: none !important;
+}
+
+.postBtn {
+    background: #3c4c59 !important;
+    color: white !important;
+}
+
+.draftBtn {
+    color: white !important;
+    background: #d96565 !important;
+}
+
+#videoUpload-1 {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
+.categorieBtn {
+    transition: all .3s;
+    border: 1px solid black !important;
+}
+
+.categorieBtn-selected {
+    border: none !important;
+    color: white !important;
+    background: #3c4c59 !important;
+}
+
+.imagePreview {
+    transition: all .3s;
+    background: #edf0f4 !important;
+    color: #6b707b !important;
+    height: fit-content;
+    min-height: 5rem;
+    position: relative;
+    overflow:hidden;
+}
+
+#output {
+    transition: all .3s;
+    opacity: 0;
+    display: none;
+    max-height: 20rem;
+    object-fit: contain;
+    width: fit-content !important;
+    max-width: 100% !important;
+}
+
+.imagePreviewText-hidden {
+    transition: all .3s;
+    visibility: hidden;
+    display: none;
+}
+
+.fade-in-top {
+    -webkit-animation: fade-in-top 0.6s cubic-bezier(0.390, 0.575, 0.565, 1.000) both;
+    animation: fade-in-top 0.6s cubic-bezier(0.390, 0.575, 0.565, 1.000) both;
+}
+@-webkit-keyframes fade-in-top {
+    0% {
+        -webkit-transform: translateY(-50px);
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+
+    100% {
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fade-in-top {
+    0% {
+        -webkit-transform: translateY(-50px);
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+
+    100% {
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+
+.fade-out-top {
+    -webkit-animation: fade-out-top 0.7s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+    animation: fade-out-top 0.7s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+}
+@-webkit-keyframes fade-out-top {
+    0% {
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    100% {
+        -webkit-transform: translateY(-50px);
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+}
+
+@keyframes fade-out-top {
+    0% {
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    100% {
+        -webkit-transform: translateY(-50px);
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+}
+
+.clearImageParent{
+    position:absolute;
+    top:.0rem;
+    right:0rem;
+    padding:0px;
+    opacity:0;
+    display:none !important;
+    z-index:49;
+    height:7rem;
+}
+.clearImageParent-active{
+    display: flex !important;
+    opacity:1;
+}
+.clearImageBtn {
+    position:absolute;
+    top:5px;
+    right:5px;
+    z-index:101;
+    transition: all .3s;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    color: white;
+    background: #0000009c;
+    border-color: transparent !important;
+    height: 25px;
+    width: 25px;
+}
+.clearImageBtn:hover {
+    border-color: white !important;
+}
+.clearImageBtn > i {
+    font-size: smaller;
+}
+.imageInfo {
+    left: 20px;
+    color: white;
+    font-size: 80%;
+    font-weight: 100;
+    top: 10px;
+}
+.imageSize {
+    font-size: 75%;
+    color: #e6e6e6;
+}
+
+@media screen and (max-width:750px) {
+    .post{
+        width: 80% !important;
+    }
+}
+@media screen and (max-width:650px) {
+    .post {
+        width: 100% !important;
+    }
+}
